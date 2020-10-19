@@ -1,1 +1,0 @@
-/usr/bin/c++  -Wall -Wextra -O2 -g   CMakeFiles/nod.dir/nod.cc.o  -o nod 
