@@ -1,0 +1,1 @@
+/usr/bin/c++  -g   CMakeFiles/JNP1_1.dir/nod.cc.o  -o JNP1_1 
