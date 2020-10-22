@@ -29,8 +29,7 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="1ebcd44b-e8fc-464a-86d0-42d63cb55e67" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/codeStyles/Project.xml" afterDir="false" />
+    <list default="true" id="1ebcd44b-e8fc-464a-86d0-42d63cb55e67" name="Default Changelist" comment="Add regex namespace.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/nod.cc" beforeDir="false" afterPath="$PROJECT_DIR$/nod.cc" afterDir="false" />
     </list>
@@ -102,8 +101,23 @@
       <workItem from="1603109627657" duration="1863000" />
       <workItem from="1603117381046" duration="24000" />
       <workItem from="1603296244935" duration="842000" />
-      <workItem from="1603370754287" duration="5052000" />
+      <workItem from="1603370754287" duration="6377000" />
     </task>
+    <task id="LOCAL-00001" summary="Refactor code.">
+      <created>1603375897773</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1603375897773</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Add regex namespace.">
+      <created>1603375915983</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1603375915983</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -121,40 +135,45 @@
     </option>
     <option name="oldMeFiltersMigrated" value="true" />
   </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Refactor code." />
+    <MESSAGE value="Add regex namespace." />
+    <option name="LAST_COMMIT_MESSAGE" value="Add regex namespace." />
+  </component>
   <component name="WindowStateProjectService">
     <state x="1832" y="345" width="909" height="283" key="#com.intellij.ide.actionMacro.EditMacrosDialog" timestamp="1603111240920">
       <screen x="1280" y="0" width="1920" height="1080" />
     </state>
     <state x="1832" y="345" width="909" height="283" key="#com.intellij.ide.actionMacro.EditMacrosDialog/1280.0.1920.1080/0.27.1280.997@1280.0.1920.1080" timestamp="1603111240920" />
-    <state width="1874" height="272" key="GridCell.Tab.0.bottom" timestamp="1603373486617">
+    <state width="1874" height="272" key="GridCell.Tab.0.bottom" timestamp="1603376713833">
       <screen x="0" y="0" width="1920" height="1035" />
     </state>
-    <state width="1874" height="272" key="GridCell.Tab.0.bottom/0.0.1920.1035@0.0.1920.1035" timestamp="1603373486617" />
+    <state width="1874" height="272" key="GridCell.Tab.0.bottom/0.0.1920.1035@0.0.1920.1035" timestamp="1603376713833" />
     <state width="1234" height="266" key="GridCell.Tab.0.bottom/1280.0.1920.1080/0.27.1280.997@0.27.1280.997" timestamp="1603109929725" />
-    <state width="1874" height="272" key="GridCell.Tab.0.center" timestamp="1603373486617">
+    <state width="1874" height="272" key="GridCell.Tab.0.center" timestamp="1603376713832">
       <screen x="0" y="0" width="1920" height="1035" />
     </state>
-    <state width="1874" height="272" key="GridCell.Tab.0.center/0.0.1920.1035@0.0.1920.1035" timestamp="1603373486617" />
+    <state width="1874" height="272" key="GridCell.Tab.0.center/0.0.1920.1035@0.0.1920.1035" timestamp="1603376713832" />
     <state width="1234" height="266" key="GridCell.Tab.0.center/1280.0.1920.1080/0.27.1280.997@0.27.1280.997" timestamp="1603109929725" />
-    <state width="1874" height="272" key="GridCell.Tab.0.left" timestamp="1603373486617">
+    <state width="1874" height="272" key="GridCell.Tab.0.left" timestamp="1603376713832">
       <screen x="0" y="0" width="1920" height="1035" />
     </state>
-    <state width="1874" height="272" key="GridCell.Tab.0.left/0.0.1920.1035@0.0.1920.1035" timestamp="1603373486617" />
+    <state width="1874" height="272" key="GridCell.Tab.0.left/0.0.1920.1035@0.0.1920.1035" timestamp="1603376713832" />
     <state width="1234" height="266" key="GridCell.Tab.0.left/1280.0.1920.1080/0.27.1280.997@0.27.1280.997" timestamp="1603109929724" />
-    <state width="1874" height="272" key="GridCell.Tab.0.right" timestamp="1603373486617">
+    <state width="1874" height="272" key="GridCell.Tab.0.right" timestamp="1603376713832">
       <screen x="0" y="0" width="1920" height="1035" />
     </state>
-    <state width="1874" height="272" key="GridCell.Tab.0.right/0.0.1920.1035@0.0.1920.1035" timestamp="1603373486617" />
+    <state width="1874" height="272" key="GridCell.Tab.0.right/0.0.1920.1035@0.0.1920.1035" timestamp="1603376713832" />
     <state width="1234" height="266" key="GridCell.Tab.0.right/1280.0.1920.1080/0.27.1280.997@0.27.1280.997" timestamp="1603109929725" />
     <state x="449" y="180" width="1022" height="729" key="SettingsEditor" timestamp="1603372134049">
       <screen x="0" y="0" width="1920" height="1035" />
     </state>
     <state x="449" y="180" width="1022" height="729" key="SettingsEditor/0.0.1920.1035@0.0.1920.1035" timestamp="1603372134049" />
     <state x="1729" y="188" width="1022" height="737" key="SettingsEditor/1280.0.1920.1080/0.27.1280.997@1280.0.1920.1080" timestamp="1603111370269" />
-    <state x="560" y="254" key="Vcs.Push.Dialog.v2" timestamp="1603112192406">
+    <state x="560" y="254" key="Vcs.Push.Dialog.v2" timestamp="1603375928614">
       <screen x="0" y="0" width="1920" height="1035" />
     </state>
-    <state x="560" y="254" key="Vcs.Push.Dialog.v2/0.0.1920.1035@0.0.1920.1035" timestamp="1603112192406" />
+    <state x="560" y="254" key="Vcs.Push.Dialog.v2/0.0.1920.1035@0.0.1920.1035" timestamp="1603375928614" />
     <state x="734" y="212" key="git4idea.branch.GitSmartOperationDialog" timestamp="1603370805531">
       <screen x="0" y="0" width="1920" height="1035" />
     </state>

@@ -9,7 +9,7 @@ std::string expression_distance = R"((0|1-9\d*),\d)";
 std::regex license_plate(expression_license_plate);
 std::regex road_name(expression_road_name);
 std::regex distance(expression_distance);
-std::regex car_movement_info(R"(\s*()" + expression_license_plate+ R"()\s+()" + expression_road_name + R"()\s+()" + expression_distance + R"()\s*)");
+std::regex car_movement_info(R"(\s*()" + expression_license_plate + R"()\s+()" + expression_road_name + R"()\s+()" + expression_distance + R"()\s*)");
 std::regex query_car(R"(\s*\?\s+)" +  expression_license_plate + R"(\s*)");
 std::regex query_road(R"(\s*\?\s+)" +  expression_road_name + R"(\s*)");
 std::regex query_all(R"(\s*\?\s*)");
@@ -49,7 +49,20 @@ void query_road(RoadType roadType, RoadNumber roadNumber, Memory &memory) {
 
 }
 
+void parse_line(const InputLine &line, Memory &memory) {
+
+}
+
 int main() {
   Memory memory;
+  std::string current_line;
+  unsigned long long line_counter = 0;
+
+  while(std::getline(std::cin, current_line)) {
+    line_counter++;
+    if(!current_line.empty()) {
+      parse_line(InputLine(current_line, line_counter), memory);
+    }
+  }
   return 0;
 }
