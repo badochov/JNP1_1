@@ -1,6 +1,19 @@
 #include <iostream>
 #include <regex>
 
+namespace nod_regex { //TODO: consider whether the name is good, maybe move to function
+std::string expression_license_plate = R"([a-zA-Z\d]{3,11})";
+std::string expression_road_name = R"([AS][1-9]\d{0,2})";
+std::string expression_distance = R"((0|1-9\d*),\d)";
+
+std::regex license_plate(expression_license_plate);
+std::regex road_name(expression_road_name);
+std::regex distance(expression_distance);
+std::regex car_movement_info(R"(\s*()" + expression_license_plate+ R"()\s+()" + expression_road_name + R"()\s+()" + expression_distance + R"()\s*)");
+std::regex query_car(R"(\s*\?\s+)" +  expression_license_plate + R"(\s*)");
+std::regex query_road(R"(\s*\?\s+)" +  expression_road_name + R"(\s*)");
+std::regex query_all(R"(\s*\?\s*)");
+}
 
 enum class RoadType {
   HIGHWAY = 'A',
