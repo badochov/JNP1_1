@@ -29,8 +29,7 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="1ebcd44b-e8fc-464a-86d0-42d63cb55e67" name="Default Changelist" comment="Add regex namespace.">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    <list default="true" id="1ebcd44b-e8fc-464a-86d0-42d63cb55e67" name="Default Changelist" comment="Write main.">
       <change beforePath="$PROJECT_DIR$/nod.cc" beforeDir="false" afterPath="$PROJECT_DIR$/nod.cc" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -101,7 +100,7 @@
       <workItem from="1603109627657" duration="1863000" />
       <workItem from="1603117381046" duration="24000" />
       <workItem from="1603296244935" duration="842000" />
-      <workItem from="1603370754287" duration="6377000" />
+      <workItem from="1603370754287" duration="6786000" />
     </task>
     <task id="LOCAL-00001" summary="Refactor code.">
       <created>1603375897773</created>
@@ -117,7 +116,14 @@
       <option name="project" value="LOCAL" />
       <updated>1603375915983</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="Write main.">
+      <created>1603377378161</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1603377378161</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -138,7 +144,8 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Refactor code." />
     <MESSAGE value="Add regex namespace." />
-    <option name="LAST_COMMIT_MESSAGE" value="Add regex namespace." />
+    <MESSAGE value="Write main." />
+    <option name="LAST_COMMIT_MESSAGE" value="Write main." />
   </component>
   <component name="WindowStateProjectService">
     <state x="1832" y="345" width="909" height="283" key="#com.intellij.ide.actionMacro.EditMacrosDialog" timestamp="1603111240920">

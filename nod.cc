@@ -15,6 +15,12 @@ std::regex query_road(R"(\s*\?\s+)" +  expression_road_name + R"(\s*)");
 std::regex query_all(R"(\s*\?\s*)");
 }
 
+enum class LineType {
+  INFO,
+  QUERY,
+  ERROR
+};
+
 enum class RoadType {
   HIGHWAY = 'A',
   EXPRESSWAY = 'S'
