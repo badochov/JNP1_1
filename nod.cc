@@ -4,12 +4,13 @@
 namespace nod_regex { //TODO: consider whether the name is good, maybe move to function
 std::string expression_license_plate = R"([a-zA-Z\d]{3,11})";
 std::string expression_road_name = R"([AS][1-9]\d{0,2})";
-std::string expression_distance = R"((0|1-9\d*),\d)";
+std::string expression_distance = R"((0|[1-9]\d*),\d)";
 
 std::regex license_plate(expression_license_plate);
 std::regex road_name(expression_road_name);
 std::regex distance(expression_distance);
 std::regex car_movement_info(R"(\s*()" + expression_license_plate + R"()\s+()" + expression_road_name + R"()\s+()" + expression_distance + R"()\s*)");
+std::regex query(R"(\s*\?()" + expression_license_plate + R"()?\s*)");
 std::regex query_car(R"(\s*\?\s+)" +  expression_license_plate + R"(\s*)");
 std::regex query_road(R"(\s*\?\s+)" +  expression_road_name + R"(\s*)");
 std::regex query_all(R"(\s*\?\s*)");
@@ -55,8 +56,41 @@ void query_road(RoadType roadType, RoadNumber roadNumber, Memory &memory) {
 
 }
 
-void parse_line(const InputLine &line, Memory &memory) {
+inline bool is_match_perfect(const std::smatch &match) {
+  return match.prefix().str().empty() && match.suffix().str().empty();
+}
 
+bool check_match(const std::string &text, const std::regex &regex) {
+  std::smatch match;
+  return std::regex_search(text, match, regex) && is_match_perfect(match);
+}
+
+LineType get_line_type(const InputLine &line) {
+  const std::string &text = std::get<0>(line);
+  std::smatch match;
+  if(check_match(text, nod_regex::car_movement_info)) {
+    return LineType::INFO;
+  }
+  else if(check_match(text, nod_regex::query)) {
+    return LineType::QUERY;
+  }
+  else {
+    return LineType::ERROR;
+  }
+}
+
+void parse_line(const InputLine &line, Memory &memory) {
+  switch (get_line_type(line)) {
+    case LineType::INFO:
+      std::cout << "info" << std::endl;
+      break;
+    case LineType::QUERY:
+      std::cout << "query" << std::endl;
+      break;
+    case LineType::ERROR:
+      std::cout << "error" << std::endl;
+      break;
+  }
 }
 
 int main() {
