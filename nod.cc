@@ -1,20 +1,25 @@
 #include <iostream>
+#include <regex>
+
 
 enum class RoadType {
-    HIGHWAY = "A", EXPRESSWAY = "S"
+  HIGHWAY = 'A',
+  EXPRESSWAY = 'S'
 };
 
-using LicensePlate = string;
+using LicensePlate = std::string;
 using RoadNumber = int;
 using RoadDistancePost = int;
+using RoadInfo = std::tuple<RoadType, RoadNumber, RoadDistancePost>;
 
-using Memory = map <RoadType, map<RoadNumber, map < LicensePlate, vector < int>>>>; // may change in future but doesn't really matter rn
+using InputLine = std::tuple<std::string, long long>;
+
+using Memory = std::map <RoadType, std::map<RoadNumber, std::map < LicensePlate, std::vector <int>>>>; //TODO: may change in future but doesn't really matter rn
 
 
 void log(LicensePlate &licensePlate,
-         RoadType roadType,
-         RoadNumber roadNumber,
-         RoadDistancePost roadDistancePost,
+         RoadInfo road,
+         const InputLine &input_line,
          Memory &memory) {
 
 }
@@ -32,7 +37,6 @@ void query_road(RoadType roadType, RoadNumber roadNumber, Memory &memory) {
 }
 
 int main() {
-    Memory memory;
-
-    return 0;
+  Memory memory;
+  return 0;
 }
