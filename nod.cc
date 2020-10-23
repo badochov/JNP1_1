@@ -143,9 +143,7 @@ void parse_line(const InputLine &line, Memory &memory) {
   }
 }
 
-
-int main() {
-  Memory memory;
+void process_input(Memory &memory) {
   std::string current_line;
   unsigned long long line_counter = 0;
 
@@ -155,5 +153,10 @@ int main() {
       parse_line(InputLine(current_line, line_counter), memory);
     }
   }
+}
+
+int main() {
+  Memory memory;
+  process_input(memory);
   return 0;
 }

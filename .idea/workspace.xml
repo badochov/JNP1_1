@@ -29,8 +29,7 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="1ebcd44b-e8fc-464a-86d0-42d63cb55e67" name="Default Changelist" comment="Create checking type of lines.">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    <list default="true" id="1ebcd44b-e8fc-464a-86d0-42d63cb55e67" name="Default Changelist" comment="Change InputLine type from tuple to pair.">
       <change beforePath="$PROJECT_DIR$/nod.cc" beforeDir="false" afterPath="$PROJECT_DIR$/nod.cc" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -102,7 +101,7 @@
       <workItem from="1603117381046" duration="24000" />
       <workItem from="1603296244935" duration="842000" />
       <workItem from="1603370754287" duration="13213000" />
-      <workItem from="1603473257258" duration="1112000" />
+      <workItem from="1603473257258" duration="1500000" />
     </task>
     <task id="LOCAL-00001" summary="Refactor code.">
       <created>1603375897773</created>
@@ -139,7 +138,21 @@
       <option name="project" value="LOCAL" />
       <updated>1603386656272</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="Remodel regex namespace.">
+      <created>1603474439350</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1603474439350</updated>
+    </task>
+    <task id="LOCAL-00007" summary="Change InputLine type from tuple to pair.">
+      <created>1603474546813</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1603474546813</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -163,7 +176,9 @@
     <MESSAGE value="Write main." />
     <MESSAGE value="Create enume for input line types." />
     <MESSAGE value="Create checking type of lines." />
-    <option name="LAST_COMMIT_MESSAGE" value="Create checking type of lines." />
+    <MESSAGE value="Remodel regex namespace." />
+    <MESSAGE value="Change InputLine type from tuple to pair." />
+    <option name="LAST_COMMIT_MESSAGE" value="Change InputLine type from tuple to pair." />
   </component>
   <component name="WindowStateProjectService">
     <state x="1832" y="345" width="909" height="283" key="#com.intellij.ide.actionMacro.EditMacrosDialog" timestamp="1603111240920">
