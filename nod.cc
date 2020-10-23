@@ -78,7 +78,7 @@ using RoadNumber = int;
 using RoadDistancePost = int;
 using RoadInfo = std::tuple<RoadType, RoadNumber, RoadDistancePost>;
 
-using InputLine = std::pair<std::string, unsigned long long>;
+using InputLine = std::pair<std::string, size_t>;
 
 using Memory = std::map <RoadType, std::map<RoadNumber, std::map <LicensePlate, std::vector <int>>>>; //TODO: may change in future but doesn't really matter rn
 
@@ -145,7 +145,7 @@ void parse_line(const InputLine &line, Memory &memory) {
 
 void process_input(Memory &memory) {
   std::string current_line;
-  unsigned long long line_counter = 0;
+  size_t line_counter = 0;
 
   while(std::getline(std::cin, current_line)) {
     line_counter++;
