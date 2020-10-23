@@ -78,9 +78,9 @@ using RoadNumber = int;
 using RoadDistancePost = int;
 using RoadInfo = std::tuple<RoadType, RoadNumber, RoadDistancePost>;
 
-using InputLine = std::tuple<std::string, unsigned long long>;
+using InputLine = std::pair<std::string, unsigned long long>;
 
-using Memory = std::map <RoadType, std::map<RoadNumber, std::map < LicensePlate, std::vector <int>>>>; //TODO: may change in future but doesn't really matter rn
+using Memory = std::map <RoadType, std::map<RoadNumber, std::map <LicensePlate, std::vector <int>>>>; //TODO: may change in future but doesn't really matter rn
 
 
 void log(LicensePlate &licensePlate,
@@ -126,7 +126,7 @@ LineType get_line_type(const InputLine &line) {
 }
 
 void print_error(const InputLine &line) {
-  std::cerr << "Error in line " << std::get<1>(line) << ": " << std::get<0>(line) << std::endl;
+  std::cerr << "Error in line " << line.second << ": " << line.first << std::endl;
 }
 
 void parse_line(const InputLine &line, Memory &memory) {
