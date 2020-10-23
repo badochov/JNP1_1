@@ -68,17 +68,18 @@ enum class LineType {
   ERROR
 };
 
-enum class RoadType {
+enum class RoadType : char {
   HIGHWAY = 'A',
   EXPRESSWAY = 'S'
 };
 
 using LicensePlate = std::string;
 using RoadNumber = int;
-using RoadDistancePost = int;
+using RoadDistancePost = int; //TODO: may be convenient to change it to unsigned long long
 using RoadInfo = std::tuple<RoadType, RoadNumber, RoadDistancePost>;
 
-using InputLine = std::pair<std::string, size_t>;
+using LineCounter = size_t;
+using InputLine = std::pair<std::string, LineCounter>;
 
 using Memory = std::map <RoadType, std::map<RoadNumber, std::map <LicensePlate, std::vector <int>>>>; //TODO: may change in future but doesn't really matter rn
 
@@ -112,7 +113,7 @@ static inline bool check_match(const std::string &text, const std::regex &regex)
 }
 
 static LineType get_line_type(const InputLine &line) {
-  const std::string &text = std::get<0>(line);
+  const std::string &text = line.first;
   std::smatch match;
   if(check_match(text, nod_regex::get_car_movement_regex())) {
     return LineType::INFO;
@@ -125,17 +126,44 @@ static LineType get_line_type(const InputLine &line) {
   }
 }
 
+static const RoadInfo& parse_road_info(const std::string &name, const std::string &distance) {
+  //TODO
+}
+
+//Assumes that line contains matching string.
+static void parse_info(const InputLine &line, Memory &memory) {
+  std::smatch match;
+  std::string info = line.first;
+
+  std::regex_search(info, match, nod_regex::get_license_plate_regex());
+  LicensePlate license_plate = match.str();
+  info = match.suffix();
+
+  std::regex_search(info, match, nod_regex::get_road_name_regex());
+  std::string road_name = match.str();
+  info = match.suffix();
+  std::regex_search(info, match, nod_regex::get_distance_regex());
+  std::string road_distance = match.str();
+  RoadInfo road_info = parse_road_info(road_name, road_distance);
+  //TODO
+}
+
+//Assumes that line contains matching string.
+static void parse_query(const InputLine &line, Memory &memory) {
+  //TODO
+}
+
 static inline void print_error(const InputLine &line) {
   std::cerr << "Error in line " << line.second << ": " << line.first << std::endl;
 }
 
-static void parse_line(const InputLine &line, Memory &memory) {
+static void parse_line(const InputLine &line, Memory &memory) { // TODO: finish all the branches
   switch (get_line_type(line)) {
     case LineType::INFO:
-      std::cout << "info" << std::endl;
+      parse_info(line, memory);
       break;
     case LineType::QUERY:
-      std::cout << "query" << std::endl;
+      parse_query(line, memory);
       break;
     case LineType::ERROR:
       print_error(line);
@@ -145,7 +173,7 @@ static void parse_line(const InputLine &line, Memory &memory) {
 
 void process_input(Memory &memory) {
   std::string current_line;
-  size_t line_counter = 0;
+  LineCounter line_counter = 0;
 
   while(std::getline(std::cin, current_line)) {
     line_counter++;
