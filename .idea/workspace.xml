@@ -29,7 +29,7 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="1ebcd44b-e8fc-464a-86d0-42d63cb55e67" name="Default Changelist" comment="Create enume for input line types.">
+    <list default="true" id="1ebcd44b-e8fc-464a-86d0-42d63cb55e67" name="Default Changelist" comment="Create checking type of lines.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/nod.cc" beforeDir="false" afterPath="$PROJECT_DIR$/nod.cc" afterDir="false" />
     </list>
@@ -79,14 +79,14 @@
     </key>
   </component>
   <component name="RunManager">
-    <configuration name="nod" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="JNP1_1" TARGET_NAME="nod" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="JNP1_1" RUN_TARGET_NAME="nod">
+    <configuration default="true" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" PASS_PARENT_ENVS_2="true">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
-    <configuration default="true" type="GradleAppRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" PASS_PARENT_ENVS_2="true">
+    <configuration name="nod" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="JNP1_1" TARGET_NAME="nod" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="JNP1_1" RUN_TARGET_NAME="nod">
       <method v="2">
-        <option name="com.jetbrains.cidr.cpp.gradle.execution.GradleNativeBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
   </component>
@@ -101,7 +101,8 @@
       <workItem from="1603109627657" duration="1863000" />
       <workItem from="1603117381046" duration="24000" />
       <workItem from="1603296244935" duration="842000" />
-      <workItem from="1603370754287" duration="11634000" />
+      <workItem from="1603370754287" duration="13213000" />
+      <workItem from="1603473257258" duration="1112000" />
     </task>
     <task id="LOCAL-00001" summary="Refactor code.">
       <created>1603375897773</created>
@@ -131,7 +132,14 @@
       <option name="project" value="LOCAL" />
       <updated>1603377552070</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="Create checking type of lines.">
+      <created>1603386656272</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1603386656272</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -154,42 +162,43 @@
     <MESSAGE value="Add regex namespace." />
     <MESSAGE value="Write main." />
     <MESSAGE value="Create enume for input line types." />
-    <option name="LAST_COMMIT_MESSAGE" value="Create enume for input line types." />
+    <MESSAGE value="Create checking type of lines." />
+    <option name="LAST_COMMIT_MESSAGE" value="Create checking type of lines." />
   </component>
   <component name="WindowStateProjectService">
     <state x="1832" y="345" width="909" height="283" key="#com.intellij.ide.actionMacro.EditMacrosDialog" timestamp="1603111240920">
       <screen x="1280" y="0" width="1920" height="1080" />
     </state>
     <state x="1832" y="345" width="909" height="283" key="#com.intellij.ide.actionMacro.EditMacrosDialog/1280.0.1920.1080/0.27.1280.997@1280.0.1920.1080" timestamp="1603111240920" />
-    <state width="1874" height="272" key="GridCell.Tab.0.bottom" timestamp="1603386209983">
+    <state width="1874" height="272" key="GridCell.Tab.0.bottom" timestamp="1603388275644">
       <screen x="0" y="0" width="1920" height="1035" />
     </state>
-    <state width="1874" height="272" key="GridCell.Tab.0.bottom/0.0.1920.1035@0.0.1920.1035" timestamp="1603386209983" />
+    <state width="1874" height="272" key="GridCell.Tab.0.bottom/0.0.1920.1035@0.0.1920.1035" timestamp="1603388275644" />
     <state width="1234" height="266" key="GridCell.Tab.0.bottom/1280.0.1920.1080/0.27.1280.997@0.27.1280.997" timestamp="1603109929725" />
-    <state width="1874" height="272" key="GridCell.Tab.0.center" timestamp="1603386209982">
+    <state width="1874" height="272" key="GridCell.Tab.0.center" timestamp="1603388275642">
       <screen x="0" y="0" width="1920" height="1035" />
     </state>
-    <state width="1874" height="272" key="GridCell.Tab.0.center/0.0.1920.1035@0.0.1920.1035" timestamp="1603386209982" />
+    <state width="1874" height="272" key="GridCell.Tab.0.center/0.0.1920.1035@0.0.1920.1035" timestamp="1603388275642" />
     <state width="1234" height="266" key="GridCell.Tab.0.center/1280.0.1920.1080/0.27.1280.997@0.27.1280.997" timestamp="1603109929725" />
-    <state width="1874" height="272" key="GridCell.Tab.0.left" timestamp="1603386209982">
+    <state width="1874" height="272" key="GridCell.Tab.0.left" timestamp="1603388275641">
       <screen x="0" y="0" width="1920" height="1035" />
     </state>
-    <state width="1874" height="272" key="GridCell.Tab.0.left/0.0.1920.1035@0.0.1920.1035" timestamp="1603386209982" />
+    <state width="1874" height="272" key="GridCell.Tab.0.left/0.0.1920.1035@0.0.1920.1035" timestamp="1603388275641" />
     <state width="1234" height="266" key="GridCell.Tab.0.left/1280.0.1920.1080/0.27.1280.997@0.27.1280.997" timestamp="1603109929724" />
-    <state width="1874" height="272" key="GridCell.Tab.0.right" timestamp="1603386209982">
+    <state width="1874" height="272" key="GridCell.Tab.0.right" timestamp="1603388275643">
       <screen x="0" y="0" width="1920" height="1035" />
     </state>
-    <state width="1874" height="272" key="GridCell.Tab.0.right/0.0.1920.1035@0.0.1920.1035" timestamp="1603386209982" />
+    <state width="1874" height="272" key="GridCell.Tab.0.right/0.0.1920.1035@0.0.1920.1035" timestamp="1603388275643" />
     <state width="1234" height="266" key="GridCell.Tab.0.right/1280.0.1920.1080/0.27.1280.997@0.27.1280.997" timestamp="1603109929725" />
     <state x="449" y="180" width="1022" height="729" key="SettingsEditor" timestamp="1603372134049">
       <screen x="0" y="0" width="1920" height="1035" />
     </state>
     <state x="449" y="180" width="1022" height="729" key="SettingsEditor/0.0.1920.1035@0.0.1920.1035" timestamp="1603372134049" />
     <state x="1729" y="188" width="1022" height="737" key="SettingsEditor/1280.0.1920.1080/0.27.1280.997@1280.0.1920.1080" timestamp="1603111370269" />
-    <state x="560" y="254" key="Vcs.Push.Dialog.v2" timestamp="1603375928614">
+    <state x="560" y="254" key="Vcs.Push.Dialog.v2" timestamp="1603387521554">
       <screen x="0" y="0" width="1920" height="1035" />
     </state>
-    <state x="560" y="254" key="Vcs.Push.Dialog.v2/0.0.1920.1035@0.0.1920.1035" timestamp="1603375928614" />
+    <state x="560" y="254" key="Vcs.Push.Dialog.v2/0.0.1920.1035@0.0.1920.1035" timestamp="1603387521554" />
     <state x="734" y="212" key="git4idea.branch.GitSmartOperationDialog" timestamp="1603370805531">
       <screen x="0" y="0" width="1920" height="1035" />
     </state>

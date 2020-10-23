@@ -2,18 +2,64 @@
 #include <regex>
 
 namespace nod_regex { //TODO: consider whether the name is good, maybe move to function
-std::string expression_license_plate = R"([a-zA-Z\d]{3,11})";
-std::string expression_road_name = R"([AS][1-9]\d{0,2})";
-std::string expression_distance = R"((0|[1-9]\d*),\d)";
+static inline const std::string& get_license_plate_expression()
+{
+  static std::string value = R"([a-zA-Z\d]{3,11})";
+  return value;
+}
 
-std::regex license_plate(expression_license_plate);
-std::regex road_name(expression_road_name);
-std::regex distance(expression_distance);
-std::regex car_movement_info(R"(\s*()" + expression_license_plate + R"()\s+()" + expression_road_name + R"()\s+()" + expression_distance + R"()\s*)");
-std::regex query(R"(\s*\?()" + expression_license_plate + R"()?\s*)");
-std::regex query_car(R"(\s*\?\s+)" +  expression_license_plate + R"(\s*)");
-std::regex query_road(R"(\s*\?\s+)" +  expression_road_name + R"(\s*)");
-std::regex query_all(R"(\s*\?\s*)");
+static inline const std::string& get_road_name_expression() {
+  static std::string value = R"([AS][1-9]\d{0,2})";
+  return value;
+}
+
+static inline const std::string& get_distance_expression() {
+  static std::string value = R"((0|[1-9]\d*),\d)";
+  return value;
+}
+
+static inline const std::regex& get_license_plate_regex() {
+  static std::regex value(get_license_plate_expression());
+  return value;
+}
+
+static inline const std::regex& get_road_name_regex() {
+  static std::regex value(get_road_name_expression());
+  return value;
+}
+
+static inline const std::regex& get_distance_regex() {
+  static std::regex value(get_distance_expression());
+  return value;
+}
+
+static inline const std::regex& get_car_movement_regex() {
+  static std::regex value(R"(\s*()"
+                          + get_license_plate_expression() + R"()\s+()"
+                          + get_road_name_expression() + R"()\s+()"
+                          + get_distance_expression() + R"()\s*)");
+  return value;
+}
+
+static inline const std::regex& get_query_regex() {
+  static std::regex value(R"(\s*\?()" + get_license_plate_expression() + R"()?\s*)");
+  return value;
+}
+
+static inline const std::regex& get_query_car_regex() {
+  static std::regex value(R"(\s*\?\s+)" + get_license_plate_expression() + R"(\s*)");
+  return value;
+}
+
+static inline const std::regex& get_query_road_regex() {
+  static std::regex value(R"(\s*\?\s+)" + get_road_name_expression() + R"(\s*)");
+  return value;
+}
+
+static inline const std::regex& get_query_all_regex() {
+  static std::regex value(R"(\s*\?\s*)");
+  return value;
+}
 }
 
 enum class LineType {
@@ -32,7 +78,7 @@ using RoadNumber = int;
 using RoadDistancePost = int;
 using RoadInfo = std::tuple<RoadType, RoadNumber, RoadDistancePost>;
 
-using InputLine = std::tuple<std::string, long long>;
+using InputLine = std::tuple<std::string, unsigned long long>;
 
 using Memory = std::map <RoadType, std::map<RoadNumber, std::map < LicensePlate, std::vector <int>>>>; //TODO: may change in future but doesn't really matter rn
 
@@ -68,15 +114,19 @@ bool check_match(const std::string &text, const std::regex &regex) {
 LineType get_line_type(const InputLine &line) {
   const std::string &text = std::get<0>(line);
   std::smatch match;
-  if(check_match(text, nod_regex::car_movement_info)) {
+  if(check_match(text, nod_regex::get_car_movement_regex())) {
     return LineType::INFO;
   }
-  else if(check_match(text, nod_regex::query)) {
+  else if(check_match(text, nod_regex::get_query_regex())) {
     return LineType::QUERY;
   }
   else {
     return LineType::ERROR;
   }
+}
+
+void print_error(const InputLine &line) {
+  std::cerr << "Error in line " << std::get<1>(line) << ": " << std::get<0>(line) << std::endl;
 }
 
 void parse_line(const InputLine &line, Memory &memory) {
@@ -88,10 +138,11 @@ void parse_line(const InputLine &line, Memory &memory) {
       std::cout << "query" << std::endl;
       break;
     case LineType::ERROR:
-      std::cout << "error" << std::endl;
+      print_error(line);
       break;
   }
 }
+
 
 int main() {
   Memory memory;
