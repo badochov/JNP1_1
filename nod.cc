@@ -102,16 +102,16 @@ void query_road(RoadType roadType, RoadNumber roadNumber, Memory &memory) {
 
 }
 
-inline bool is_match_perfect(const std::smatch &match) {
+static inline bool is_match_perfect(const std::smatch &match) {
   return match.prefix().str().empty() && match.suffix().str().empty();
 }
 
-bool check_match(const std::string &text, const std::regex &regex) {
+static inline bool check_match(const std::string &text, const std::regex &regex) {
   std::smatch match;
   return std::regex_search(text, match, regex) && is_match_perfect(match);
 }
 
-LineType get_line_type(const InputLine &line) {
+static LineType get_line_type(const InputLine &line) {
   const std::string &text = std::get<0>(line);
   std::smatch match;
   if(check_match(text, nod_regex::get_car_movement_regex())) {
@@ -125,11 +125,11 @@ LineType get_line_type(const InputLine &line) {
   }
 }
 
-void print_error(const InputLine &line) {
+static inline void print_error(const InputLine &line) {
   std::cerr << "Error in line " << line.second << ": " << line.first << std::endl;
 }
 
-void parse_line(const InputLine &line, Memory &memory) {
+static void parse_line(const InputLine &line, Memory &memory) {
   switch (get_line_type(line)) {
     case LineType::INFO:
       std::cout << "info" << std::endl;
