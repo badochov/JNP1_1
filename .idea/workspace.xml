@@ -29,7 +29,7 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="1ebcd44b-e8fc-464a-86d0-42d63cb55e67" name="Default Changelist" comment="Move forward with parsing.">
+    <list default="true" id="1ebcd44b-e8fc-464a-86d0-42d63cb55e67" name="Default Changelist" comment="Finish parser, not tested and not revised.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/nod.cc" beforeDir="false" afterPath="$PROJECT_DIR$/nod.cc" afterDir="false" />
     </list>
@@ -84,6 +84,11 @@
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
+    <configuration default="true" type="GradleAppRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" PASS_PARENT_ENVS_2="true">
+      <method v="2">
+        <option name="com.jetbrains.cidr.cpp.gradle.execution.GradleNativeBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -98,7 +103,7 @@
       <workItem from="1603296244935" duration="842000" />
       <workItem from="1603370754287" duration="13213000" />
       <workItem from="1603473257258" duration="4403000" />
-      <workItem from="1603548114512" duration="2420000" />
+      <workItem from="1603548114512" duration="5615000" />
     </task>
     <task id="LOCAL-00001" summary="Refactor code.">
       <created>1603375897773</created>
@@ -177,7 +182,21 @@
       <option name="project" value="LOCAL" />
       <updated>1603477743157</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="Finish parse_info.">
+      <created>1603550551145</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1603550551145</updated>
+    </task>
+    <task id="LOCAL-00013" summary="Finish parser, not tested and not revised.">
+      <created>1603552095184</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1603552095184</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -207,7 +226,9 @@
     <MESSAGE value="Change line counter type to size_t." />
     <MESSAGE value="Change some functions to static." />
     <MESSAGE value="Move forward with parsing." />
-    <option name="LAST_COMMIT_MESSAGE" value="Move forward with parsing." />
+    <MESSAGE value="Finish parse_info." />
+    <MESSAGE value="Finish parser, not tested and not revised." />
+    <option name="LAST_COMMIT_MESSAGE" value="Finish parser, not tested and not revised." />
   </component>
   <component name="WindowStateProjectService">
     <state x="1832" y="345" width="909" height="283" key="#com.intellij.ide.actionMacro.EditMacrosDialog" timestamp="1603111240920">
@@ -243,10 +264,10 @@
       <screen x="0" y="0" width="1920" height="1035" />
     </state>
     <state x="689" y="252" width="540" height="524" key="StructurePopup/0.0.1920.1035@0.0.1920.1035" timestamp="1603474216847" />
-    <state x="560" y="254" key="Vcs.Push.Dialog.v2" timestamp="1603477768599">
+    <state x="560" y="254" key="Vcs.Push.Dialog.v2" timestamp="1603552101320">
       <screen x="0" y="0" width="1920" height="1035" />
     </state>
-    <state x="560" y="254" key="Vcs.Push.Dialog.v2/0.0.1920.1035@0.0.1920.1035" timestamp="1603477768599" />
+    <state x="560" y="254" key="Vcs.Push.Dialog.v2/0.0.1920.1035@0.0.1920.1035" timestamp="1603552101320" />
     <state x="734" y="212" key="git4idea.branch.GitSmartOperationDialog" timestamp="1603370805531">
       <screen x="0" y="0" width="1920" height="1035" />
     </state>

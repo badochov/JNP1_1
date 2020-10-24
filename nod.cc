@@ -46,16 +46,6 @@ static inline const std::regex& get_query_regex() {
   return value;
 }
 
-static inline const std::regex& get_query_car_regex() {
-  static std::regex value(R"(\s*\?\s+)" + get_license_plate_expression() + R"(\s*)");
-  return value;
-}
-
-static inline const std::regex& get_query_road_regex() {
-  static std::regex value(R"(\s*\?\s+)" + get_road_name_expression() + R"(\s*)");
-  return value;
-}
-
 static inline const std::regex& get_general_query_regex() {
   static std::regex value(R"(\s*\?\s*)");
   return value;
@@ -187,6 +177,27 @@ static void parse_info(const InputLine &line, Memory &memory) {
   log(license_plate, road_info, line, memory);
 }
 
+static void try_querying_car(const InputLine &line, Memory &memory) {
+  std::smatch match;
+
+  LicensePlate license_plate = parse_license_plate(line.first, match);
+  if(!license_plate.empty()) {
+    query_car(license_plate, memory);
+  }
+}
+
+static void try_querying_road(const InputLine &line, Memory &memory) {
+  std::smatch match;
+
+  std::regex_search(line.first, match, nod_regex::get_road_name_regex());
+  std::string road_name = match.str();
+  if(!road_name.empty()) {
+    RoadType type = char_to_road_type(road_name[0]);
+    RoadNumber number = parse_road_number(road_name, match);
+    query_road(type, number, memory);
+  }
+}
+
 //Assumes that line contains matching string.
 static void parse_query(const InputLine &line, Memory &memory) {
   // May be inefficient, I'm not sure how regex work.
@@ -194,18 +205,8 @@ static void parse_query(const InputLine &line, Memory &memory) {
     general_query(memory);
   }
   else {
-    // There can be match for only license plate or both license plate and road name,
-    // but there can't be match only for road name, so if program reached this branch,
-    // then there must exist a match for license plate.
-    std::smatch match;
-    LicensePlate license_plate = parse_license_plate(line.first, match);
-    query_car(license_plate, memory);
-
-    if(check_match(license_plate, nod_regex::get_road_name_regex())) {
-      query_road(char_to_road_type(license_plate[0]),
-                 parse_road_number(license_plate, match),
-                 memory);
-    }
+    try_querying_car(line, memory);
+    try_querying_road(line, memory);
   }
 }
 
