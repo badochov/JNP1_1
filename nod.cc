@@ -60,6 +60,11 @@ static inline const std::regex& get_query_all_regex() {
   static std::regex value(R"(\s*\?\s*)");
   return value;
 }
+
+static inline const std::regex& get_number_regex() {
+  static std::regex value(R"(\d+)");
+  return value;
+}
 }
 
 enum class LineType {
@@ -70,7 +75,8 @@ enum class LineType {
 
 enum class RoadType : char {
   HIGHWAY = 'A',
-  EXPRESSWAY = 'S'
+  EXPRESSWAY = 'S',
+  NOT_RECOGNIZED
 };
 
 using LicensePlate = std::string;
@@ -126,26 +132,62 @@ static LineType get_line_type(const InputLine &line) {
   }
 }
 
-static const RoadInfo& parse_road_info(const std::string &name, const std::string &distance) {
-  //TODO
+static RoadType char_to_road_type(char ch) {
+  switch(ch) {
+    case 'A':
+      return RoadType::HIGHWAY;
+    case 'S':
+      return RoadType::EXPRESSWAY;
+    default:
+      return RoadType::NOT_RECOGNIZED;
+  }
+}
+
+static inline LicensePlate parse_license_plate(const std::string &text, std::smatch &match) {
+  std::regex_search(text, match, nod_regex::get_license_plate_regex());
+  return match.str();
+}
+
+static inline RoadNumber parse_road_number(const std::string &text, std::smatch &match) {
+  std::regex_search(text, match, nod_regex::get_number_regex());
+  return std::stoi(match.str());
+}
+
+static inline RoadDistancePost parse_distance_post(const std::string &text, std::smatch &match) {
+  // TODO: change stoi to stol if we decide to change RoadDistancePost type
+  std::regex_search(text, match, nod_regex::get_number_regex());
+  RoadDistancePost distance = 10 * std::stoi(match.str());
+  std::string decimal_part = match.suffix();
+  std::regex_search(decimal_part, match, nod_regex::get_number_regex());
+  distance += std::stoi(match.str());
+  return distance;
+}
+
+static inline RoadInfo parse_road_info(const std::string &text, std::smatch &match) {
+  std::regex_search(text, match, nod_regex::get_road_name_regex());
+  std::string road_name = match.str();
+
+  RoadType type = char_to_road_type(road_name[0]);
+
+  RoadNumber number = parse_road_number(road_name, match);
+  std::string next_info = match.suffix();
+
+  std::regex_search(next_info, match, nod_regex::get_distance_regex());
+  std::string road_distance = match.str();
+  RoadDistancePost distance_post = parse_distance_post(road_distance, match);
+
+  return RoadInfo(type, number, distance_post);
 }
 
 //Assumes that line contains matching string.
 static void parse_info(const InputLine &line, Memory &memory) {
   std::smatch match;
-  std::string info = line.first;
 
-  std::regex_search(info, match, nod_regex::get_license_plate_regex());
-  LicensePlate license_plate = match.str();
-  info = match.suffix();
+  LicensePlate license_plate = parse_license_plate(line.first, match);
+  RoadInfo road_info = parse_road_info(match.suffix(), match);
 
-  std::regex_search(info, match, nod_regex::get_road_name_regex());
-  std::string road_name = match.str();
-  info = match.suffix();
-  std::regex_search(info, match, nod_regex::get_distance_regex());
-  std::string road_distance = match.str();
-  RoadInfo road_info = parse_road_info(road_name, road_distance);
-  //TODO
+  //TODO: log should return the line with error (if needed) or print the error by itself
+  log(license_plate, road_info, line, memory);
 }
 
 //Assumes that line contains matching string.
