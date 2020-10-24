@@ -56,7 +56,7 @@ static inline const std::regex& get_query_road_regex() {
   return value;
 }
 
-static inline const std::regex& get_query_all_regex() {
+static inline const std::regex& get_general_query_regex() {
   static std::regex value(R"(\s*\?\s*)");
   return value;
 }
@@ -75,8 +75,7 @@ enum class LineType {
 
 enum class RoadType : char {
   HIGHWAY = 'A',
-  EXPRESSWAY = 'S',
-  NOT_RECOGNIZED
+  EXPRESSWAY = 'S'
 };
 
 using LicensePlate = std::string;
@@ -101,7 +100,7 @@ void general_query(Memory &memory) {
 
 }
 
-void query_car(LicensePlate *licensePlate, Memory &memory) {
+void query_car(LicensePlate &licensePlate, Memory &memory) {
 
 }
 
@@ -133,13 +132,11 @@ static LineType get_line_type(const InputLine &line) {
 }
 
 static RoadType char_to_road_type(char ch) {
-  switch(ch) {
-    case 'A':
-      return RoadType::HIGHWAY;
-    case 'S':
-      return RoadType::EXPRESSWAY;
-    default:
-      return RoadType::NOT_RECOGNIZED;
+  if(ch == 'A') {
+    return RoadType::HIGHWAY;
+  }
+  else {
+    return RoadType::EXPRESSWAY;
   }
 }
 
@@ -192,7 +189,24 @@ static void parse_info(const InputLine &line, Memory &memory) {
 
 //Assumes that line contains matching string.
 static void parse_query(const InputLine &line, Memory &memory) {
-  //TODO
+  // May be inefficient, I'm not sure how regex work.
+  if(check_match(line.first, nod_regex::get_general_query_regex())) {
+    general_query(memory);
+  }
+  else {
+    // There can be match for only license plate or both license plate and road name,
+    // but there can't be match only for road name, so if program reached this branch,
+    // then there must exist a match for license plate.
+    std::smatch match;
+    LicensePlate license_plate = parse_license_plate(line.first, match);
+    query_car(license_plate, memory);
+
+    if(check_match(license_plate, nod_regex::get_road_name_regex())) {
+      query_road(char_to_road_type(license_plate[0]),
+                 parse_road_number(license_plate, match),
+                 memory);
+    }
+  }
 }
 
 static inline void print_error(const InputLine &line) {
