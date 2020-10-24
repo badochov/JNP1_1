@@ -173,13 +173,12 @@ inline bool are_roads_same(const RoadInfo &road_info1, const RoadInfo &road_info
 inline const CarData &get_const_car_data(const LicensePlate &license_plate, const Memory &memory) {
   return memory.first.at(license_plate);
 }
+
 inline CarData &get_car_data(const LicensePlate &license_plate, Memory &memory) {
   return memory.first[license_plate];
 }
+
 inline const Distance &get_const_road_data(const Road &road, const Memory &memory) {
-  return memory.second.at(road);
-}
-inline Distance &get_road_data(const Road &road, Memory &memory) {
   return memory.second.at(road);
 }
 
@@ -219,16 +218,14 @@ void add_data_to_car(
     Memory &memory) {
   const RoadType &road_type = road.second;
   auto &car_data = get_car_data(license_plate, memory).first;
-  if (!has_key(car_data, road_type)) {
-    car_data[road_type] = 0;
-  }
+
   car_data[road_type] += distance;
 }
 
 void add_data_to_road(const Road &road,
                       Distance distance,
                       Memory &memory) {
-  get_road_data(road, memory) += distance;
+  memory.second[road] += distance;
 }
 
 void add_data(const RoadInfo &road_entrance_info,

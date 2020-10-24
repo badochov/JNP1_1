@@ -1,12 +1,13 @@
 #!/bin/bash
-# jeżeli wynik testu jest niepoprawny pamięć nie jest testowana
 
 if [[ $# != 2 ]]; then
-  echo "Sposób uzytkowania: $0 <ścieżka/do/folderu/z/testami> <ścieżka/do/fodleru/z/projektem>." >&2
+  echo "Sposób uzytkowania: $0 <ścieżka/do/folderu/z/testami> <ścieżka/do/fodleru/z/projektem> " >&2
   exit 1
 fi
+
 tests=$(realpath "$1")
 project=$(realpath "$2")
+threshold=${3:-1}
 
 if ! [[ -d "$tests" ]]; then
   echo "Podany folder z testami nie istnieje"
@@ -22,16 +23,14 @@ total=0
 correct=0
 leaked=0
 
-temp_folder=$(mktemp -d)
-name="$temp_folder/nod"
-
-cd "$temp_folder" || exit 1
-
 function traverse_folder() {
   folder="$1"
   shopt -s nullglob
-  for f in "$folder"/*.c; do
-    run_test "$f"
+  for f in "$folder"/*.in; do
+    rand_float="$(printf '0%s\n' "$(echo "scale=8; $RANDOM/32768" | bc )")"
+    if (( $(echo "$rand_float < $threshold" |bc -l) )); then
+      run_test "$f"
+    fi
   done
 
   shopt -s nullglob
@@ -41,39 +40,44 @@ function traverse_folder() {
   done
 }
 
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+NOCOLOR='\033[0m'
+
 function run_test() {
-  f="$1"
+  input_file="$1"
+  output_file=${input_file//.in/.out}
+  error_file=${input_file//.in/.err}
+
   ((total++))
   echo -e "\e[1mTest $f \e[0m"
-  cmake "$project" > /dev/null
 
+  ./nod < "$input_file" 1>"$temp_out" 2>"$temp_err"
 
-  time valgrind --error-exitcode=15 --leak-check=full --show-leak-kinds=all --errors-for-leak-kinds=all --log-file=/dev/null "$name"
+    if cmp -s "$output_file" "$temp_out" ; then
+        echo -ne "${GREEN}stdout ok${NOCOLOR}, "
 
-  err=$?
+        if cmp -s "$error_file" "$temp_err" ; then
+            echo -ne "${GREEN}stderr ok${NOCOLOR}\n"
+            ((correct++))
+        else
+            echo -ne "${RED}stderr nieprawidlowe${NOCOLOR}\n"
+            diff -d "$error_file" "$temp_err"
+        fi
 
-  if [[ $err == 15 ]]; then
-    echo -e "\e[1;31m\tWyciek pamięci\e[0m"
-    ((correct++))
-    ((leaked++))
-  elif [[ $err != 0 ]]; then
-    echo -e "\e[1;31m\tNiepoprawny wynik\e[0m"
-  else
-    ((correct++))
-    echo -e "\e[1;32m\tPoprawny wynik, brak wycieku\e[0m"
-  fi
+    else
+        echo -ne "${RED}stdout nieprawidlowe${NOCOLOR}\n"
+        diff -d "$output_file" "$temp_out"
+    fi
+  }
 
-  echo ""
-}
+temp_out=$(mktemp)
+temp_err=$(mktemp)
+trap 'rm -f "$temp_out $temp_err" nod' INT TERM HUP EXIT
+
+cd "$2" || exit
+g++ -Wall -Wextra -O2 -std=c++17 nod.cc -o nod
 
 traverse_folder "$tests"
 
-echo -e "Poprawne \e[1m$correct\e[0m na \e[1m$total\e[0m testów"
-
-echo -e "Wyciekła pamięć w \e[1m$leaked\e[0m na \e[1m$total\e[0m testów"
-
-if [[ $leaked == 0 ]] && [[ $correct == "$total" ]]; then
-  echo -e "\e[1;92mWszystko dobrze! \e[0m"
-fi
-
-rm -r "$temp_folder"
+echo "total: ${total}, correct ${correct}"
