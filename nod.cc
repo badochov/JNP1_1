@@ -76,7 +76,7 @@ std::ostream &operator<<(std::ostream &os, const RoadType &road_type) {
 }
 using LicensePlate = std::string;
 using RoadNumber = int;
-using RoadDistancePost = int; //TODO: may be convenient to change it to unsigned long long
+using RoadDistancePost = int; //FIXME: may be convenient to change it to unsigned long long
 
 using Road = std::pair<RoadNumber, RoadType>;
 
