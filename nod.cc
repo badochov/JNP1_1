@@ -39,7 +39,7 @@ std::ostream &operator<<(std::ostream &os, const RoadType &road_type) {
   return os;
 }
 
-// Max whole part of distance written on distance post
+// Max distance written on distance post
 constexpr RoadDistancePost MAX_ROAD_DISTANCE_POST = 1e8;
 namespace nod_regex {
 inline const std::string &get_license_plate_expression() {
@@ -52,9 +52,18 @@ inline const std::string &get_road_name_expression() {
   return value;
 }
 
-inline const std::string &get_distance_expression() {
+inline RoadDistancePost number_length(RoadDistancePost road_distance_post){
+  int len =0;
+  while(road_distance_post > 0){
+    len ++;
+    road_distance_post/=10;
+  }
 
-  static std::string value = R"((0|[1-9]\d{0,)" + std::to_string(MAX_ROAD_DISTANCE_POST) + R"("}),\d)";
+  return len;
+}
+
+inline const std::string &get_distance_expression() {
+  static std::string value = R"((0|[1-9]\d{0,)" + std::to_string(number_length(MAX_ROAD_DISTANCE_POST)) + R"(}),\d)";
   return value;
 }
 
