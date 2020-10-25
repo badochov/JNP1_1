@@ -71,7 +71,6 @@ enum class LineType {
   INFO,
   QUERY,
   ERROR,
-  EMPTY
 };
 
 enum class RoadType : char {
@@ -413,14 +412,12 @@ void parse_query(const InputLine &line, Memory &memory) {
 LineType get_line_type(const InputLine &line) {
   const std::string &text = line.first;
 
-  if(text.empty()) { //FIXME: do we need this?
-    return LineType::EMPTY;
-  } else if (check_match(text, nod_regex::get_car_movement_regex())) {
+  if (check_match(text, nod_regex::get_car_movement_regex())) {
     return LineType::INFO;
   } else if (check_match(text, nod_regex::get_query_regex())) {
     return LineType::QUERY;
   }  else {
-    return LineType::ERROR; //TODO handle empty line as it's not error
+    return LineType::ERROR;
   }
 }
 
@@ -431,8 +428,6 @@ void parse_line(const InputLine &line, Memory &memory) {
       break;
     case LineType::QUERY:
       parse_query(line, memory);
-      break;
-    case LineType::EMPTY:
       break;
     case LineType::ERROR:
       print_error(line);
