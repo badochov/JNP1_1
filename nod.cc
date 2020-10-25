@@ -1,57 +1,58 @@
 #include <iostream>
 #include <regex>
+#include <cmath>
 
-namespace nod_regex { //TODO: consider whether the name is good, maybe move to function
-static inline const std::string& get_license_plate_expression()
-{
+namespace {
+namespace nod_regex {
+inline const std::string &get_license_plate_expression() {
   static std::string value = R"([a-zA-Z\d]{3,11})";
   return value;
 }
 
-static inline const std::string& get_road_name_expression() {
+inline const std::string &get_road_name_expression() {
   static std::string value = R"([AS][1-9]\d{0,2})";
   return value;
 }
 
-static inline const std::string& get_distance_expression() {
+inline const std::string &get_distance_expression() {
   static std::string value = R"((0|[1-9]\d*),\d)";
   return value;
 }
 
-static inline const std::regex& get_license_plate_regex() {
+inline const std::regex &get_license_plate_regex() {
   static std::regex value(get_license_plate_expression());
   return value;
 }
 
-static inline const std::regex& get_road_name_regex() {
+inline const std::regex &get_road_name_regex() {
   static std::regex value(get_road_name_expression());
   return value;
 }
 
-static inline const std::regex& get_distance_regex() {
+inline const std::regex &get_distance_regex() {
   static std::regex value(get_distance_expression());
   return value;
 }
 
-static inline const std::regex& get_car_movement_regex() {
+inline const std::regex &get_car_movement_regex() {
   static std::regex value(R"(\s*()"
-                          + get_license_plate_expression() + R"()\s+()"
-                          + get_road_name_expression() + R"()\s+()"
-                          + get_distance_expression() + R"()\s*)");
+                              + get_license_plate_expression() + R"()\s+()"
+                              + get_road_name_expression() + R"()\s+()"
+                              + get_distance_expression() + R"()\s*)");
   return value;
 }
 
-static inline const std::regex& get_query_regex() {
+inline const std::regex &get_query_regex() {
   static std::regex value(R"(\s*\?()" + get_license_plate_expression() + R"()?\s*)");
   return value;
 }
 
-static inline const std::regex& get_general_query_regex() {
+inline const std::regex &get_general_query_regex() {
   static std::regex value(R"(\s*\?\s*)");
   return value;
 }
 
-static inline const std::regex& get_number_regex() {
+inline const std::regex &get_number_regex() {
   static std::regex value(R"(\d+)");
   return value;
 }
@@ -60,7 +61,8 @@ static inline const std::regex& get_number_regex() {
 enum class LineType {
   INFO,
   QUERY,
-  ERROR
+  ERROR,
+  EMPTY
 };
 
 enum class RoadType : char {
@@ -68,79 +70,76 @@ enum class RoadType : char {
   EXPRESSWAY = 'S'
 };
 
+std::ostream &operator<<(std::ostream &os, const RoadType &road_type) {
+  os << static_cast<std::underlying_type<RoadType>::type>(road_type);
+  return os;
+}
 using LicensePlate = std::string;
 using RoadNumber = int;
-using RoadDistancePost = int; //TODO: may be convenient to change it to unsigned long long
-using RoadInfo = std::tuple<RoadType, RoadNumber, RoadDistancePost>;
+using RoadDistancePost = int; //FIXME: may be convenient to change it to unsigned long long
+
+using Road = std::pair<RoadNumber, RoadType>;
+
+using RoadInfo = std::pair<Road, RoadDistancePost>;
 
 using LineCounter = size_t;
 using InputLine = std::pair<std::string, LineCounter>;
 
-using Memory = std::map <RoadType, std::map<RoadNumber, std::map <LicensePlate, std::vector <int>>>>; //TODO: may change in future but doesn't really matter rn
+using Distance = unsigned long long;
 
 
-void log(LicensePlate &licensePlate,
-         RoadInfo road,
-         const InputLine &input_line,
-         Memory &memory) {
+using RoadMemory = std::map<Road, Distance>;
+using EntranceLog = std::pair<RoadInfo, InputLine>;
+using EntranceMemory = std::map<LicensePlate, EntranceLog>;
+using CarData = std::map<RoadType, Distance>;
+using CarMemory = std::map<LicensePlate, CarData>;
+using Memory = std::tuple<CarMemory,
+                          RoadMemory,
+                          EntranceMemory>; //TODO: may change in future but doesn't really matter rn
 
-}
-
-void general_query(Memory &memory) {
-
-}
-
-void query_car(LicensePlate &licensePlate, Memory &memory) {
-
-}
-
-void query_road(RoadType roadType, RoadNumber roadNumber, Memory &memory) {
-
-}
-
-static inline bool is_match_perfect(const std::smatch &match) {
+inline bool is_match_perfect(const std::smatch &match) {
   return match.prefix().str().empty() && match.suffix().str().empty();
 }
 
-static inline bool check_match(const std::string &text, const std::regex &regex) {
+inline bool check_match(const std::string &text, const std::regex &regex) {
   std::smatch match;
   return std::regex_search(text, match, regex) && is_match_perfect(match);
 }
 
-static LineType get_line_type(const InputLine &line) {
+LineType get_line_type(const InputLine &line) {
   const std::string &text = line.first;
   std::smatch match;
-  if(check_match(text, nod_regex::get_car_movement_regex())) {
+  if (check_match(text, nod_regex::get_car_movement_regex())) {
     return LineType::INFO;
-  }
-  else if(check_match(text, nod_regex::get_query_regex())) {
+  } else if (check_match(text, nod_regex::get_query_regex())) {
     return LineType::QUERY;
-  }
-  else {
-    return LineType::ERROR;
+  } else if (text.empty()) {
+    return LineType::EMPTY;
+
+  } else {
+    return LineType::ERROR; //TODO handle empty line as it's not error
   }
 }
 
-static RoadType char_to_road_type(char ch) {
-  if(ch == 'A') {
+RoadType char_to_road_type(char ch) {
+  if (ch == 'A') {
     return RoadType::HIGHWAY;
-  }
-  else {
+  } else {
     return RoadType::EXPRESSWAY;
   }
 }
 
-static inline LicensePlate parse_license_plate(const std::string &text, std::smatch &match) {
+inline LicensePlate parse_license_plate(const std::string &text, std::smatch &match) {
   std::regex_search(text, match, nod_regex::get_license_plate_regex());
   return match.str();
 }
 
-static inline RoadNumber parse_road_number(const std::string &text, std::smatch &match) {
+inline RoadNumber parse_road_number(const std::string &text, std::smatch &match) {
   std::regex_search(text, match, nod_regex::get_number_regex());
   return std::stoi(match.str());
 }
 
-static inline RoadDistancePost parse_distance_post(const std::string &text, std::smatch &match) {
+inline RoadDistancePost parse_distance_post(const std::string &text, std::smatch &match) {
   // TODO: change stoi to stol if we decide to change RoadDistancePost type
   std::regex_search(text, match, nod_regex::get_number_regex());
   RoadDistancePost distance = 10 * std::stoi(match.str());
@@ -150,80 +149,255 @@ static inline RoadDistancePost parse_distance_post(const std::string &text, std:
   return distance;
 }
 
-static inline RoadInfo parse_road_info(const std::string &text, std::smatch &match) {
+inline RoadInfo parse_road_info(const std::string &text, std::smatch &match) {
   std::regex_search(text, match, nod_regex::get_road_name_regex());
   std::string road_name = match.str();
 
   RoadType type = char_to_road_type(road_name[0]);
-
-  RoadNumber number = parse_road_number(road_name, match);
   std::string next_info = match.suffix();
+  RoadNumber number = parse_road_number(road_name, match);
 
   std::regex_search(next_info, match, nod_regex::get_distance_regex());
   std::string road_distance = match.str();
   RoadDistancePost distance_post = parse_distance_post(road_distance, match);
 
-  return RoadInfo(type, number, distance_post);
+  Road road(number, type);
+  return RoadInfo(road,
+                  distance_post); //TODO very quick and dirty fix, pls change it to be less cancerogenous
+}
+
+void print_error(const InputLine &line) {
+  std::cerr << "Error in line " << line.second << ": " << line.first << std::endl;
+}
+
+inline bool are_roads_same(const RoadInfo &road_info1, const RoadInfo &road_info2) {
+  return road_info1.first == road_info2.first;
+}
+
+inline CarMemory &get_car_memory(Memory &memory) {
+  return std::get<0>(memory);
+}
+inline CarMemory const &get_car_memory(const Memory &memory) {
+  return std::get<0>(memory);
+}
+
+inline RoadMemory &get_road_memory(Memory &memory) {
+  return std::get<1>(memory);
+}
+inline RoadMemory const &get_road_memory(const Memory &memory) {
+  return std::get<1>(memory);
+}
+inline const EntranceMemory &get_entrance_memory(const Memory &memory) {
+  return std::get<2>(memory);
+}
+
+inline EntranceMemory &get_entrance_memory(Memory &memory) {
+  return std::get<2>(memory);
+}
+
+inline bool is_on_other_road(const LicensePlate &license_plate, const RoadInfo &road, const Memory &memory) {
+  const RoadInfo &prev_road = get_entrance_memory(memory).at(license_plate).first;
+  return !are_roads_same(prev_road, road);
+}
+
+inline void handle_wrong_road(const LicensePlate &license_plate,
+                              const RoadInfo &road_info,
+                              const InputLine &input_line,
+                              Memory &memory) {
+  EntranceLog &entrance_log = get_entrance_memory(memory)[license_plate];
+  print_error(entrance_log.second);
+  entrance_log = EntranceLog(road_info, input_line);
+}
+
+template<class T, class S>
+inline bool has_key(std::map<T, S> map, T key) {
+  return map.count(key) == 1;
+}
+
+inline bool is_on_road(const LicensePlate &license_plate, const Memory &memory) {
+  const EntranceMemory &entrance_memory = get_entrance_memory(memory);
+  return has_key(entrance_memory, license_plate);
+}
+
+inline Distance calc_distance(const RoadInfo &road_entrance_info, const RoadInfo &road_exit_info) {
+  return static_cast<Distance>(std::max(road_entrance_info.second, road_exit_info.second)
+      - std::min(road_entrance_info.second, road_exit_info.second));
+}
+
+void add_data_to_car(
+    const LicensePlate &license_plate,
+    const Road &road,
+    Distance distance,
+    Memory &memory) {
+  const RoadType &road_type = road.second;
+  CarData &car_data = get_car_memory(memory)[license_plate];
+
+  car_data[road_type] += distance;
+}
+
+void add_data_to_road(const Road &road,
+                      Distance distance,
+                      Memory &memory) {
+  get_road_memory(memory)[road] += distance;
+}
+
+void add_data(const RoadInfo &road_entrance_info,
+              const RoadInfo &road_exit_info,
+              const LicensePlate &license_plate,
+              Memory &memory) {
+  Road road = road_entrance_info.first;
+  Distance distance = calc_distance(road_entrance_info, road_exit_info);
+  add_data_to_car(license_plate, road, distance, memory);
+  add_data_to_road(road, distance, memory);
+}
+
+inline void handle_valid_road_exit_log(const LicensePlate &license_plate,
+                                       const RoadInfo &road,
+                                       Memory &memory) {
+  EntranceMemory &entrance_memory = get_entrance_memory(memory);
+  RoadInfo &road_entrance_info = entrance_memory[license_plate].first;
+  add_data(road_entrance_info, road, license_plate, memory);
+  entrance_memory.erase(license_plate);
+}
+
+inline void handle_road_exit_log(const LicensePlate &license_plate,
+                                 const RoadInfo &road,
+                                 const InputLine &line_input,
+                                 Memory &memory) {
+  if (is_on_other_road(license_plate, road, memory)) {
+    handle_wrong_road(license_plate, road, line_input, memory);
+  } else {
+    handle_valid_road_exit_log(license_plate, road, memory);
+  }
+}
+
+inline void handle_road_entrance_log(const LicensePlate &license_plate,
+                                     const RoadInfo &road,
+                                     const InputLine &input_line,
+                                     Memory &memory) {
+  get_entrance_memory(memory)[license_plate] = {road, input_line};
+}
+
+void log(const LicensePlate &license_plate,
+         const RoadInfo &road,
+         const InputLine &input_line,
+         Memory &memory) {
+  if (is_on_road(license_plate, memory)) {
+    handle_road_exit_log(license_plate, road, input_line, memory);
+  } else {
+    handle_road_entrance_log(license_plate, road, input_line, memory);
+  }
+}
+
+inline void print_distance(Distance distance) {
+  std::cout << distance / 10 << "," << distance % 10;
+}
+
+void print_car_data(const LicensePlate &license_plate, const CarMemory &car_memory) {
+
+  std::cout << license_plate;
+  for (const auto &[road_type, distance] : car_memory.at(license_plate)) {
+    std::cout << " " << road_type << " ";
+    print_distance(distance);
+  }
+  std::cout << std::endl;
+}
+
+void query_car(const LicensePlate &license_plate, const Memory &memory) {
+  const CarMemory &car_memory = get_car_memory(memory);
+  if (!has_key(car_memory, license_plate))
+    return;
+
+  print_car_data(license_plate, car_memory);
+}
+
+inline void print_road(const Road &road) {
+  std::cout << road.second << road.first;
+}
+
+void print_road_data(const Road &road, const RoadMemory &road_memory) {
+  Distance distance = road_memory.at(road);
+  print_road(road);
+  std::cout << " ";
+  print_distance(distance);
+  std::cout << std::endl;
+}
+
+inline void query_road(const Road &road, const Memory &memory) {
+  const RoadMemory &road_memory = get_road_memory(memory);
+  if (!has_key(road_memory, road))
+    return;
+  print_road_data(road, road_memory);
+}
+
+void query_cars(const Memory &memory) {
+  for (const auto &[license_plate, _] : get_car_memory(memory)) {
+    query_car(license_plate, memory);
+  }
+}
+
+void query_roads(const Memory &memory) {
+  for (const auto &[road_id, _] : get_road_memory(memory)) {
+    query_road(road_id, memory);
+  }
+}
+
+inline void general_query(const Memory &memory) {
+  query_cars(memory);
+  query_roads(memory);
 }
 
 //Assumes that line contains matching string.
-static void parse_info(const InputLine &line, Memory &memory) {
+void parse_info(const InputLine &line, Memory &memory) {
   std::smatch match;
 
   LicensePlate license_plate = parse_license_plate(line.first, match);
   RoadInfo road_info = parse_road_info(match.suffix(), match);
 
-  //TODO: log should return the line with error (if needed) or print the error by itself
   log(license_plate, road_info, line, memory);
 }
 
-static void try_querying_car(const InputLine &line, Memory &memory) {
+void try_querying_car(const InputLine &line, Memory &memory) {
   std::smatch match;
 
   LicensePlate license_plate = parse_license_plate(line.first, match);
-  if(!license_plate.empty()) {
+  if (!license_plate.empty()) {
     query_car(license_plate, memory);
   }
 }
 
-static void try_querying_road(const InputLine &line, Memory &memory) {
+void try_querying_road(const InputLine &line, Memory &memory) {
   std::smatch match;
 
   std::regex_search(line.first, match, nod_regex::get_road_name_regex());
   std::string road_name = match.str();
-  if(!road_name.empty()) {
+  if (!road_name.empty()) {
     RoadType type = char_to_road_type(road_name[0]);
     RoadNumber number = parse_road_number(road_name, match);
-    query_road(type, number, memory);
+    Road road(number, type);
+    query_road(road, memory);
   }
 }
 
 //Assumes that line contains matching string.
-static void parse_query(const InputLine &line, Memory &memory) {
+void parse_query(const InputLine &line, Memory &memory) {
   // May be inefficient, I'm not sure how regex work.
-  if(check_match(line.first, nod_regex::get_general_query_regex())) {
+  if (check_match(line.first, nod_regex::get_general_query_regex())) {
     general_query(memory);
-  }
-  else {
+  } else {
     try_querying_car(line, memory);
     try_querying_road(line, memory);
   }
 }
 
-static inline void print_error(const InputLine &line) {
-  std::cerr << "Error in line " << line.second << ": " << line.first << std::endl;
-}
-
-static void parse_line(const InputLine &line, Memory &memory) { // TODO: finish all the branches
+void parse_line(const InputLine &line, Memory &memory) {
   switch (get_line_type(line)) {
-    case LineType::INFO:
-      parse_info(line, memory);
+    case LineType::INFO:parse_info(line, memory);
       break;
-    case LineType::QUERY:
-      parse_query(line, memory);
+    case LineType::QUERY:parse_query(line, memory);
       break;
-    case LineType::ERROR:
-      print_error(line);
+    case LineType::EMPTY:break;
+    case LineType::ERROR:print_error(line);
       break;
   }
 }
@@ -232,12 +406,13 @@ void process_input(Memory &memory) {
   std::string current_line;
   LineCounter line_counter = 0;
 
-  while(std::getline(std::cin, current_line)) {
+  while (std::getline(std::cin, current_line)) {
     line_counter++;
-    if(!current_line.empty()) {
+    if (!current_line.empty()) {
       parse_line(InputLine(current_line, line_counter), memory);
     }
   }
+}
 }
 
 int main() {
