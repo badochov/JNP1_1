@@ -196,7 +196,9 @@ inline EntranceMemory &get_entrance_memory(Memory &memory) {
   return std::get<2>(memory);
 }
 
-inline bool is_on_other_road(const LicensePlate &license_plate, const RoadInfo &road, const Memory &memory) {
+inline bool is_on_other_road(const LicensePlate &license_plate,
+                             const RoadInfo &road,
+                             const Memory &memory) {
   const RoadInfo &prev_road = get_entrance_memory(memory).at(license_plate).first;
   return !are_roads_same(prev_road, road);
 }
@@ -220,7 +222,8 @@ inline bool is_on_road(const LicensePlate &license_plate, const Memory &memory) 
   return has_key(entrance_memory, license_plate);
 }
 
-inline Distance calc_distance(const RoadInfo &road_entrance_info, const RoadInfo &road_exit_info) {
+inline Distance calc_distance(const RoadInfo &road_entrance_info,
+                              const RoadInfo &road_exit_info) {
   return static_cast<Distance>(std::max(road_entrance_info.second, road_exit_info.second)
       - std::min(road_entrance_info.second, road_exit_info.second));
 }
