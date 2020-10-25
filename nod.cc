@@ -437,11 +437,14 @@ LineType get_line_type(const InputLine &line) {
 
 void parse_line(const InputLine &line, Memory &memory) {
   switch (get_line_type(line)) {
-    case LineType::INFO:parse_info(line, memory);
+    case LineType::INFO:
+      parse_info(line, memory);
       break;
-    case LineType::QUERY:parse_query(line, memory);
+    case LineType::QUERY:
+      parse_query(line, memory);
       break;
-    case LineType::ERROR:print_error(line);
+    case LineType::ERROR:
+      print_error(line);
       break;
   }
 }
