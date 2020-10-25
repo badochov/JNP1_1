@@ -371,6 +371,11 @@ void try_querying_car(const InputLine &line, Memory &memory) {
   }
 }
 
+bool test(std::smatch &match) {
+  return (match.suffix().str().empty() &&
+          check_match(match.prefix(), nod_regex::get_general_query_regex()));
+}
+
 //Assumes that line contains string matching query.
 void try_querying_road(const InputLine &line, Memory &memory) {
   std::smatch match;
@@ -380,8 +385,7 @@ void try_querying_road(const InputLine &line, Memory &memory) {
   //query's argument is not something like that.
   std::regex_search(line.first, match, nod_regex::get_road_name_with_spaces_regex());
   std::string road_name = match.str();
-  std::string suffix = match.suffix();
-  if (!road_name.empty() && suffix.empty()) {
+  if (!road_name.empty() && test(match)) {
     std::regex_search(road_name, match, nod_regex::get_road_name_regex());
     road_name = match.str();
     Road road = parse_road_name(road_name, match);
