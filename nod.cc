@@ -376,6 +376,14 @@ bool check_if_road_name_is_not_substring(std::smatch &match) {
           check_match(match.prefix(), nod_regex::get_general_query_regex()));
 }
 
+void parse_road_name_and_query_road(const std::string &road_name_with_spaces,
+                                    Memory &memory) {
+  std::smatch match;
+  std::regex_search(road_name_with_spaces, match, nod_regex::get_road_name_regex());
+  Road road = parse_road_name(match.str(), match);
+  query_road(road, memory);
+}
+
 //Assumes that line contains string matching query.
 void try_querying_road(const InputLine &line, Memory &memory) {
   std::smatch match;
@@ -384,18 +392,13 @@ void try_querying_road(const InputLine &line, Memory &memory) {
   //Therefore, we need to confirm that
   //query's argument is not something like that.
   std::regex_search(line.first, match, nod_regex::get_road_name_with_spaces_regex());
-  std::string road_name = match.str();
-  if (!road_name.empty() && check_if_road_name_is_not_substring(match)) {
-    std::regex_search(road_name, match, nod_regex::get_road_name_regex());
-    road_name = match.str();
-    Road road = parse_road_name(road_name, match);
-    query_road(road, memory);
+  if (!match.str().empty() && check_if_road_name_is_not_substring(match)) {
+    parse_road_name_and_query_road(match.str(), memory);
   }
 }
 
 //Assumes that line contains matching string.
 void parse_query(const InputLine &line, Memory &memory) {
-  // May be inefficient, I'm not sure how regex work.
   if (check_match(line.first, nod_regex::get_general_query_regex())) {
     general_query(memory);
   } else {
@@ -420,13 +423,16 @@ LineType get_line_type(const InputLine &line) {
 
 void parse_line(const InputLine &line, Memory &memory) {
   switch (get_line_type(line)) {
-    case LineType::INFO:parse_info(line, memory);
+    case LineType::INFO:
+      parse_info(line, memory);
       break;
-    case LineType::QUERY:parse_query(line, memory);
+    case LineType::QUERY:
+      parse_query(line, memory);
       break;
     case LineType::EMPTY:
       break;
-    case LineType::ERROR:print_error(line);
+    case LineType::ERROR:
+      print_error(line);
       break;
   }
 }
