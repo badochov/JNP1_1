@@ -43,7 +43,11 @@ inline const std::regex &get_car_movement_regex() {
 }
 
 inline const std::regex &get_query_regex() {
-  static std::regex value(R"(\s*\?()" + get_license_plate_expression() + R"()?\s*)");
+  static std::regex value(R"(\s*\?[)" +
+                          get_license_plate_expression() +
+                          R"(|)" +
+                          get_road_name_expression() +
+                          R"(]?\s*)");
   return value;
 }
 
