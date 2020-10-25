@@ -3,6 +3,44 @@
 #include <cmath>
 
 namespace {
+enum class LineType {
+  INFO,
+  QUERY,
+  ERROR,
+};
+
+enum class RoadType : char {
+  HIGHWAY = 'A',
+  EXPRESSWAY = 'S'
+};
+
+using LineCounter = size_t;
+using InputLine = std::pair<std::string, LineCounter>;
+
+using Distance = unsigned long; // Distance travelled by car in hm (100m)
+
+using LicensePlate = std::string;
+using CarData = std::map<RoadType, Distance>;
+using CarMemory = std::map<LicensePlate, CarData>;
+
+using RoadNumber = int;
+using RoadDistancePost = unsigned long; // Distance on road distance post stored in hm (100m)
+using Road = std::pair<RoadNumber, RoadType>;
+using RoadInfo = std::pair<Road, RoadDistancePost>;
+using RoadMemory = std::map<Road, Distance>;
+
+using EntranceLog = std::pair<RoadInfo, InputLine>;
+using EntranceMemory = std::map<LicensePlate, EntranceLog>;
+
+using Memory = std::tuple<CarMemory, RoadMemory, EntranceMemory>;
+
+std::ostream &operator<<(std::ostream &os, const RoadType &road_type) {
+  os << static_cast<std::underlying_type<RoadType>::type>(road_type);
+  return os;
+}
+
+// Max whole part of distance written on distance post
+constexpr RoadDistancePost MAX_ROAD_DISTANCE_POST = 1e8;
 namespace nod_regex {
 inline const std::string &get_license_plate_expression() {
   static std::string value = R"([a-zA-Z\d]{3,11})";
@@ -15,7 +53,8 @@ inline const std::string &get_road_name_expression() {
 }
 
 inline const std::string &get_distance_expression() {
-  static std::string value = R"((0|[1-9]\d*),\d)";
+
+  static std::string value = R"((0|[1-9]\d{0,)" + std::to_string(MAX_ROAD_DISTANCE_POST) + R"("}),\d)";
   return value;
 }
 
@@ -49,10 +88,10 @@ inline const std::regex &get_car_movement_regex() {
 
 inline const std::regex &get_query_regex() {
   static std::regex value(R"(\s*\?\s*()" +
-                          get_license_plate_expression() +
-                          R"(|)" +
-                          get_road_name_expression() +
-                          R"()?\s*)");
+      get_license_plate_expression() +
+      R"(|)" +
+      get_road_name_expression() +
+      R"()?\s*)");
   return value;
 }
 
@@ -67,43 +106,9 @@ inline const std::regex &get_number_regex() {
 }
 }
 
-enum class LineType {
-  INFO,
-  QUERY,
-  ERROR,
-};
-
-enum class RoadType : char {
-  HIGHWAY = 'A',
-  EXPRESSWAY = 'S'
-};
-
-std::ostream &operator<<(std::ostream &os, const RoadType &road_type) {
-  os << static_cast<std::underlying_type<RoadType>::type>(road_type);
-  return os;
+inline void print_error(const InputLine &line) {
+  std::cerr << "Error in line " << line.second << ": " << line.first << std::endl;
 }
-using LicensePlate = std::string;
-using RoadNumber = int;
-using RoadDistancePost = int; //FIXME: may be convenient to change it to unsigned long long
-
-using Road = std::pair<RoadNumber, RoadType>;
-
-using RoadInfo = std::pair<Road, RoadDistancePost>;
-
-using LineCounter = size_t;
-using InputLine = std::pair<std::string, LineCounter>;
-
-using Distance = unsigned long long;
-
-
-using RoadMemory = std::map<Road, Distance>;
-using EntranceLog = std::pair<RoadInfo, InputLine>;
-using EntranceMemory = std::map<LicensePlate, EntranceLog>;
-using CarData = std::map<RoadType, Distance>;
-using CarMemory = std::map<LicensePlate, CarData>;
-using Memory = std::tuple<CarMemory,
-                          RoadMemory,
-                          EntranceMemory>; //TODO: may change in future but doesn't really matter rn
 
 inline bool is_match_perfect(const std::smatch &match) {
   return match.prefix().str().empty() && match.suffix().str().empty();
@@ -133,10 +138,9 @@ inline RoadNumber parse_road_number(const std::string &text, std::smatch &match)
 }
 
 inline RoadDistancePost parse_distance_post(const std::string &text, std::smatch &match) {
-  // TODO: change stoi to stol if we decide to change RoadDistancePost type
   std::regex_search(text, match, nod_regex::get_number_regex());
 
-  RoadDistancePost distance = 10 * std::stoi(match.str());
+  RoadDistancePost distance = 10 * std::stoul(match.str());
 
   std::string decimal_part = match.suffix();
   std::regex_search(decimal_part, match, nod_regex::get_number_regex());
@@ -163,11 +167,7 @@ inline RoadInfo parse_road_info(const std::string &text, std::smatch &match) {
   std::string road_distance = match.str();
   RoadDistancePost distance_post = parse_distance_post(road_distance, match);
 
-  return RoadInfo(road, distance_post); //TODO very quick and dirty fix, pls change it to be less cancerogenous
-}
-
-void print_error(const InputLine &line) {
-  std::cerr << "Error in line " << line.second << ": " << line.first << std::endl;
+  return RoadInfo(road, distance_post);
 }
 
 inline bool are_roads_same(const RoadInfo &road_info1, const RoadInfo &road_info2) {
@@ -177,6 +177,7 @@ inline bool are_roads_same(const RoadInfo &road_info1, const RoadInfo &road_info
 inline CarMemory &get_car_memory(Memory &memory) {
   return std::get<0>(memory);
 }
+
 inline CarMemory const &get_car_memory(const Memory &memory) {
   return std::get<0>(memory);
 }
@@ -184,9 +185,11 @@ inline CarMemory const &get_car_memory(const Memory &memory) {
 inline RoadMemory &get_road_memory(Memory &memory) {
   return std::get<1>(memory);
 }
+
 inline RoadMemory const &get_road_memory(const Memory &memory) {
   return std::get<1>(memory);
 }
+
 inline const EntranceMemory &get_entrance_memory(const Memory &memory) {
   return std::get<2>(memory);
 }
@@ -223,7 +226,7 @@ inline bool is_on_road(const LicensePlate &license_plate, const Memory &memory) 
 
 inline Distance calc_distance(const RoadInfo &road_entrance_info,
                               const RoadInfo &road_exit_info) {
-  return static_cast<Distance>(std::max(road_entrance_info.second, road_exit_info.second)
+  return (std::max(road_entrance_info.second, road_exit_info.second)
       - std::min(road_entrance_info.second, road_exit_info.second));
 }
 
@@ -244,6 +247,7 @@ void add_data_to_road(const Road &road,
   get_road_memory(memory)[road] += distance;
 }
 
+// Adds data about car's finished movement to memory
 void add_data(const RoadInfo &road_entrance_info,
               const RoadInfo &road_exit_info,
               const LicensePlate &license_plate,
@@ -345,6 +349,7 @@ void query_all_roads(const Memory &memory) {
   }
 }
 
+//Performs query with no parameters
 inline void general_query(const Memory &memory) {
   query_all_cars(memory);
   query_all_roads(memory);
@@ -375,7 +380,7 @@ void try_querying_car(const InputLine &line, Memory &memory) {
 
 bool check_if_road_name_is_not_substring(std::smatch &match) {
   return (match.suffix().str().empty() &&
-          check_match(match.prefix(), nod_regex::get_general_query_regex()));
+      check_match(match.prefix(), nod_regex::get_general_query_regex()));
 }
 
 void parse_road_name_and_query_road(const std::string &road_name_with_spaces,
@@ -416,21 +421,18 @@ LineType get_line_type(const InputLine &line) {
     return LineType::INFO;
   } else if (check_match(text, nod_regex::get_query_regex())) {
     return LineType::QUERY;
-  }  else {
+  } else {
     return LineType::ERROR;
   }
 }
 
 void parse_line(const InputLine &line, Memory &memory) {
   switch (get_line_type(line)) {
-    case LineType::INFO:
-      parse_info(line, memory);
+    case LineType::INFO:parse_info(line, memory);
       break;
-    case LineType::QUERY:
-      parse_query(line, memory);
+    case LineType::QUERY:parse_query(line, memory);
       break;
-    case LineType::ERROR:
-      print_error(line);
+    case LineType::ERROR:print_error(line);
       break;
   }
 }
