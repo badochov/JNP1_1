@@ -134,21 +134,24 @@ inline RoadDistancePost parse_distance_post(const std::string &text, std::smatch
   return distance;
 }
 
+inline Road parse_road_name(const std::string &road_name, std::smatch &match) {
+  RoadType type = char_to_road_type(road_name[0]);
+  std::string next_info = match.suffix();
+  RoadNumber number = parse_road_number(road_name, match);
+  return Road(type, number);
+}
+
 inline RoadInfo parse_road_info(const std::string &text, std::smatch &match) {
   std::regex_search(text, match, nod_regex::get_road_name_regex());
   std::string road_name = match.str();
 
-  RoadType type = char_to_road_type(road_name[0]);
-  std::string next_info = match.suffix();
-  RoadNumber number = parse_road_number(road_name, match);
+  Road road = parse_road_name(road_name, match)
 
   std::regex_search(next_info, match, nod_regex::get_distance_regex());
   std::string road_distance = match.str();
   RoadDistancePost distance_post = parse_distance_post(road_distance, match);
 
-  Road road(number, type);
-  return RoadInfo(road,
-                  distance_post); //TODO very quick and dirty fix, pls change it to be less cancerogenous
+  return RoadInfo(road, distance_post); //TODO very quick and dirty fix, pls change it to be less cancerogenous
 }
 
 void print_error(const InputLine &line) {
@@ -357,9 +360,7 @@ void try_querying_road(const InputLine &line, Memory &memory) {
   std::regex_search(line.first, match, nod_regex::get_road_name_regex());
   std::string road_name = match.str();
   if (!road_name.empty()) {
-    RoadType type = char_to_road_type(road_name[0]);
-    RoadNumber number = parse_road_number(road_name, match);
-    Road road(number, type);
+    Road road = parse_road_name(road_name, match);
     query_road(road, memory);
   }
 }
