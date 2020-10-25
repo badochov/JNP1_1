@@ -43,11 +43,11 @@ inline const std::regex &get_car_movement_regex() {
 }
 
 inline const std::regex &get_query_regex() {
-  static std::regex value(R"(\s*\?[)" +
+  static std::regex value(R"(\s*\?\s*()" +
                           get_license_plate_expression() +
                           R"(|)" +
                           get_road_name_expression() +
-                          R"(]?\s*)");
+                          R"()?\s*)");
   return value;
 }
 
@@ -131,9 +131,12 @@ inline RoadNumber parse_road_number(const std::string &text, std::smatch &match)
 inline RoadDistancePost parse_distance_post(const std::string &text, std::smatch &match) {
   // TODO: change stoi to stol if we decide to change RoadDistancePost type
   std::regex_search(text, match, nod_regex::get_number_regex());
+
   RoadDistancePost distance = 10 * std::stoi(match.str());
+
   std::string decimal_part = match.suffix();
   std::regex_search(decimal_part, match, nod_regex::get_number_regex());
+
   distance += std::stoi(match.str());
   return distance;
 }
@@ -142,14 +145,15 @@ inline Road parse_road_name(const std::string &road_name, std::smatch &match) {
   RoadType type = char_to_road_type(road_name[0]);
   std::string next_info = match.suffix();
   RoadNumber number = parse_road_number(road_name, match);
-  return Road(type, number);
+  return Road(number, type);
 }
 
 inline RoadInfo parse_road_info(const std::string &text, std::smatch &match) {
   std::regex_search(text, match, nod_regex::get_road_name_regex());
   std::string road_name = match.str();
+  std::string next_info = match.suffix();
 
-  Road road = parse_road_name(road_name, match)
+  Road road = parse_road_name(road_name, match);
 
   std::regex_search(next_info, match, nod_regex::get_distance_regex());
   std::string road_distance = match.str();
@@ -335,8 +339,8 @@ void query_all_roads(const Memory &memory) {
 }
 
 inline void general_query(const Memory &memory) {
-  query_cars(memory);
-  query_roads(memory);
+  query_all_cars(memory);
+  query_all_roads(memory);
 }
 
 //Assumes that line contains matching string.
