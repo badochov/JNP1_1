@@ -106,55 +106,6 @@ inline void print_error(const InputLine &line) {
   std::cerr << "Error in line " << line.second << ": " << line.first << std::endl;
 }
 
-inline bool is_match_perfect(const std::smatch &match) {
-  return match.prefix().str().empty() && match.suffix().str().empty();
-}
-
-inline bool check_match(const std::string &text, const std::regex &regex, std::smatch &match) {
-  return std::regex_search(text, match, regex) && is_match_perfect(match);
-}
-
-RoadType char_to_road_type(char ch) {
-  if (ch == 'A') {
-    return RoadType::HIGHWAY;
-  } else {
-    return RoadType::EXPRESSWAY;
-  }
-}
-
-inline RoadNumber parse_road_number(const std::string &text, std::smatch &match) {
-  std::regex_search(text, match, nod_regex::get_number_regex());
-  return std::stoi(match.str());
-}
-
-inline RoadDistancePost parse_distance_post(const std::string &text) {
-  std::smatch match;
-  std::regex_search(text, match, nod_regex::get_number_regex());
-
-  RoadDistancePost distance = 10 * std::stoul(match.str());
-
-  std::string decimal_part = match.suffix();
-  std::regex_search(decimal_part, match, nod_regex::get_number_regex());
-
-  distance += std::stoi(match.str());
-  return distance;
-}
-
-inline Road parse_road_name(const std::string &road_name) {
-  std::smatch match;
-  RoadType type = char_to_road_type(road_name[0]);
-  RoadNumber number = parse_road_number(road_name, match);
-  return Road(number, type);
-}
-
-inline RoadInfo parse_road_info(const std::string &road_name, const std::string &road_distance) {
-  Road road = parse_road_name(road_name);
-
-  RoadDistancePost distance_post = parse_distance_post(road_distance);
-
-  return RoadInfo(road, distance_post);
-}
-
 inline bool are_roads_same(const RoadInfo &road_info1, const RoadInfo &road_info2) {
   return road_info1.first == road_info2.first;
 }
@@ -340,12 +291,61 @@ inline void general_query(const Memory &memory) {
   query_all_roads(memory);
 }
 
-//Assumes that line contains matching string.
+RoadType char_to_road_type(char ch) {
+  if (ch == 'A') {
+    return RoadType::HIGHWAY;
+  } else {
+    return RoadType::EXPRESSWAY;
+  }
+}
+
+inline RoadNumber parse_road_number(const std::string &text, std::smatch &match) {
+  std::regex_search(text, match, nod_regex::get_number_regex());
+  return std::stoi(match.str());
+}
+
+inline RoadDistancePost parse_distance_post(const std::string &text) {
+  std::smatch match;
+  std::regex_search(text, match, nod_regex::get_number_regex());
+
+  RoadDistancePost distance = 10 * std::stoul(match.str());
+
+  std::string decimal_part = match.suffix();
+  std::regex_search(decimal_part, match, nod_regex::get_number_regex());
+
+  distance += std::stoi(match.str());
+  return distance;
+}
+
+inline Road parse_road_name(const std::string &road_name) {
+  std::smatch match;
+  RoadType type = char_to_road_type(road_name[0]);
+  RoadNumber number = parse_road_number(road_name, match);
+  return Road(number, type);
+}
+
+inline RoadInfo parse_road_info(const std::string &road_name, const std::string &road_distance) {
+  Road road = parse_road_name(road_name);
+
+  RoadDistancePost distance_post = parse_distance_post(road_distance);
+
+  return RoadInfo(road, distance_post);
+}
+
+//Assumes that match contains matching regular expression.
 void parse_info(const InputLine &line, std::smatch &match, Memory &memory) {
   LicensePlate license_plate = match.str(1);
   RoadInfo road_info = parse_road_info(match.str(2), match.str(3));
 
   log(license_plate, road_info, line, memory);
+}
+
+inline bool is_match_perfect(const std::smatch &match) {
+  return match.prefix().str().empty() && match.suffix().str().empty();
+}
+
+inline bool check_match(const std::string &text, const std::regex &regex, std::smatch &match) {
+  return std::regex_search(text, match, regex) && is_match_perfect(match);
 }
 
 void try_querying_car(const LicensePlate &license_plate, Memory &memory) {
@@ -365,7 +365,7 @@ void try_querying_road(const std::string &road_name, Memory &memory) {
   }
 }
 
-//Assumes that line contains matching string.
+//Assumes that match contains matching regular expression.
 void parse_query(std::smatch &match, Memory &memory) {
   if (match.str(1).empty()) {
     general_query(memory);
