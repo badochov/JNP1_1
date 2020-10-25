@@ -407,7 +407,7 @@ void parse_query(const InputLine &line, Memory &memory) {
 LineType get_line_type(const InputLine &line) {
   const std::string &text = line.first;
 
-  if(text.empty()) {
+  if(text.empty()) { //FIXME: do we need this?
     return LineType::EMPTY;
   } else if (check_match(text, nod_regex::get_car_movement_regex())) {
     return LineType::INFO;
