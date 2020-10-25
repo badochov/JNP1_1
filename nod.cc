@@ -106,21 +106,6 @@ inline bool check_match(const std::string &text, const std::regex &regex) {
   return std::regex_search(text, match, regex) && is_match_perfect(match);
 }
 
-LineType get_line_type(const InputLine &line) {
-  const std::string &text = line.first;
-  std::smatch match;
-  if (check_match(text, nod_regex::get_car_movement_regex())) {
-    return LineType::INFO;
-  } else if (check_match(text, nod_regex::get_query_regex())) {
-    return LineType::QUERY;
-  } else if (text.empty()) {
-    return LineType::EMPTY;
-
-  } else {
-    return LineType::ERROR; //TODO handle empty line as it's not error
-  }
-}
-
 RoadType char_to_road_type(char ch) {
   if (ch == 'A') {
     return RoadType::HIGHWAY;
@@ -325,18 +310,18 @@ void print_road_data(const Road &road, const RoadMemory &road_memory) {
 
 inline void query_road(const Road &road, const Memory &memory) {
   const RoadMemory &road_memory = get_road_memory(memory);
-  if (!has_key(road_memory, road))
-    return;
-  print_road_data(road, road_memory);
+  if (has_key(road_memory, road)) {
+    print_road_data(road, road_memory);
+  }
 }
 
-void query_cars(const Memory &memory) {
+void query_all_cars(const Memory &memory) {
   for (const auto &[license_plate, _] : get_car_memory(memory)) {
     query_car(license_plate, memory);
   }
 }
 
-void query_roads(const Memory &memory) {
+void query_all_roads(const Memory &memory) {
   for (const auto &[road_id, _] : get_road_memory(memory)) {
     query_road(road_id, memory);
   }
@@ -390,13 +375,28 @@ void parse_query(const InputLine &line, Memory &memory) {
   }
 }
 
+LineType get_line_type(const InputLine &line) {
+  const std::string &text = line.first;
+
+  if(text.empty()) {
+    return LineType::EMPTY;
+  } else if (check_match(text, nod_regex::get_car_movement_regex())) {
+    return LineType::INFO;
+  } else if (check_match(text, nod_regex::get_query_regex())) {
+    return LineType::QUERY;
+  }  else {
+    return LineType::ERROR; //TODO handle empty line as it's not error
+  }
+}
+
 void parse_line(const InputLine &line, Memory &memory) {
   switch (get_line_type(line)) {
     case LineType::INFO:parse_info(line, memory);
       break;
     case LineType::QUERY:parse_query(line, memory);
       break;
-    case LineType::EMPTY:break;
+    case LineType::EMPTY:
+      break;
     case LineType::ERROR:print_error(line);
       break;
   }
