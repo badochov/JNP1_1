@@ -29,6 +29,11 @@ inline const std::regex &get_road_name_regex() {
   return value;
 }
 
+inline const std::regex &get_road_name_with_spaces_regex() {
+  static std::regex value(R"(\s*)" + get_road_name_expression() + R"(\s*)");
+  return value;
+}
+
 inline const std::regex &get_distance_regex() {
   static std::regex value(get_distance_expression());
   return value;
@@ -353,22 +358,32 @@ void parse_info(const InputLine &line, Memory &memory) {
   log(license_plate, road_info, line, memory);
 }
 
+//Assumes that line contains string matching query.
 void try_querying_car(const InputLine &line, Memory &memory) {
   std::smatch match;
 
+  //We already checked correctness of the line,
+  //so the only case in which match can't be found
+  //is when the query argument is road name consisting of two characters (eg. S2)
   LicensePlate license_plate = parse_license_plate(line.first, match);
   if (!license_plate.empty()) {
     query_car(license_plate, memory);
   }
 }
 
+//Assumes that line contains string matching query.
 void try_querying_road(const InputLine &line, Memory &memory) {
   std::smatch match;
-
-  //todo: aktualnie wyszuka jeśli mamy zapytanie typu "? A210test"
-  std::regex_search(line.first, match, nod_regex::get_road_name_regex());
+  //Correct road name can be a substring of a license plate,
+  //eg. A1 is substring of QA1TYH12
+  //Therefore, we need to confirm that
+  //query's argument is not something like that.
+  std::regex_search(line.first, match, nod_regex::get_road_name_with_spaces_regex());
   std::string road_name = match.str();
-  if (!road_name.empty()) {
+  std::string suffix = match.suffix();
+  if (!road_name.empty() && suffix.empty()) {
+    std::regex_search(road_name, match, nod_regex::get_road_name_regex());
+    road_name = match.str();
     Road road = parse_road_name(road_name, match);
     query_road(road, memory);
   }
