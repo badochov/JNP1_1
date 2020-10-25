@@ -361,6 +361,7 @@ void try_querying_car(const InputLine &line, Memory &memory) {
 void try_querying_road(const InputLine &line, Memory &memory) {
   std::smatch match;
 
+  //todo: aktualnie wyszuka jeśli mamy zapytanie typu "? A210test"
   std::regex_search(line.first, match, nod_regex::get_road_name_regex());
   std::string road_name = match.str();
   if (!road_name.empty()) {
