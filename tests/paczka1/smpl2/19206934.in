@@ -1,0 +1,40 @@
+eq4x A500 6,2
+?
+
+?chCdql
+
+rKhWNtiow S47 46,8
+S47 S190 24,8
+chCdql A496 59,1
+eq4x A500 19,3
+rKhWNtiow S47 79,6
+eq4x A500 23,1
+S47 S47 60,3
+JmEV A496 80,1
+eq4x A500 113,2
+
+chCdql A496 33,1
+chCdql A496 2,2
+?JmEV
+rKhWNtiow A500 78,4
+JmEV A496 224,3
+?
+
+chCdql A496 10,1
+?i2c
+JmEV S190 96,0
+rKhWNtiow A500 51,7
+JmEV S47 45,6
+?JmEV
+N4OQx S190 96,8
+eq4x S190 32,1
+JmEV S47 52,9
+rKhWNtiow S47 77,2
+eq4x S190 10,3
+?
+?S47
+?
+
+?A496
+rKhWNtiow S47 29,4
+S47 S47 254,5
