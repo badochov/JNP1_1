@@ -24,7 +24,7 @@ using CarData = std::map<RoadType, Distance>;
 using CarMemory = std::map<LicensePlate, CarData>;
 
 using RoadNumber = int;
-using RoadDistancePost = unsigned long; // Distance on road distance post stored in hm (100m)
+using RoadDistancePost = unsigned long; // Distance on road post stored in hm (100m)
 using Road = std::pair<RoadNumber, RoadType>;
 using RoadInfo = std::pair<Road, RoadDistancePost>;
 using RoadMemory = std::map<Road, Distance>;
@@ -52,9 +52,9 @@ inline const std::string &get_road_name_expression() {
   return value;
 }
 
-inline RoadDistancePost number_length(RoadDistancePost road_distance_post){
+inline RoadDistancePost number_length(RoadDistancePost road_distance_post) {
   static int len = 0;
-  if(len == 0) {
+  if (len == 0) {
     while (road_distance_post > 0) {
       len++;
       road_distance_post /= 10;
@@ -65,7 +65,9 @@ inline RoadDistancePost number_length(RoadDistancePost road_distance_post){
 }
 
 inline const std::string &get_distance_expression() {
-  static std::string value = R"((0|[1-9]\d{0,)" + std::to_string(number_length(MAX_ROAD_DISTANCE_POST)) + R"(}),(\d))";
+  static std::string value = R"((0|[1-9]\d{0,)" +
+      std::to_string(number_length(MAX_ROAD_DISTANCE_POST)) +
+      R"(}),(\d))";
   return value;
 }
 
@@ -166,7 +168,7 @@ inline void handle_wrong_road(const LicensePlate &license_plate,
 }
 
 template<class T, class S>
-inline bool has_key(std::map<T, S> map, T key) {
+inline bool has_key(const std::map<T, S> &map, T key) {
   return map.count(key) == 1;
 }
 
@@ -315,8 +317,10 @@ RoadType char_to_road_type(char ch) {
 }
 
 inline RoadDistancePost parse_distance_post(const std::smatch &match) {
-  RoadDistancePost distance = 10 * std::stoul(nod_regex::get_movement_distance_int_match(match));
-  distance += std::stoi(nod_regex::get_movement_distance_decimal_match(match));
+  std::string number_to_be_parsed = nod_regex::get_movement_distance_int_match(match);
+  RoadDistancePost distance = 10 * std::stoul(number_to_be_parsed);
+  number_to_be_parsed = nod_regex::get_movement_distance_decimal_match(match);
+  distance += std::stoi(number_to_be_parsed);
   return distance;
 }
 
@@ -346,7 +350,9 @@ inline bool is_match_perfect(const std::smatch &match) {
   return match.prefix().str().empty() && match.suffix().str().empty();
 }
 
-inline bool check_match(const std::string &text, const std::regex &regex, std::smatch &match) {
+inline bool check_match(const std::string &text,
+                        const std::regex &regex,
+                        std::smatch &match) {
   return std::regex_search(text, match, regex) && is_match_perfect(match);
 }
 
