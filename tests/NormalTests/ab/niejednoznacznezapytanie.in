@@ -1,0 +1,15 @@
+A1car A1 1,0
+A1car A1 2,0
+ ? A1car 
+ ? A1 
+
+cA2r A2 3,0
+cA2r A2 5,0
+ ? cA2r 
+ ? A2
+
+carA3 A3 6,0
+carA3 A3 12,0
+
+ ? carA3 
+ ? A3
