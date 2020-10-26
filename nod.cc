@@ -53,17 +53,19 @@ inline const std::string &get_road_name_expression() {
 }
 
 inline RoadDistancePost number_length(RoadDistancePost road_distance_post){
-  int len =0;
-  while(road_distance_post > 0){
-    len ++;
-    road_distance_post/=10;
+  static int len = 0;
+  if(len == 0) {
+    while (road_distance_post > 0) {
+      len++;
+      road_distance_post /= 10;
+    }
   }
 
   return len;
 }
 
 inline const std::string &get_distance_expression() {
-  static std::string value = R"((0|[1-9]\d{0,)" + std::to_string(number_length(MAX_ROAD_DISTANCE_POST)) + R"(}),\d)";
+  static std::string value = R"((0|[1-9]\d{0,)" + std::to_string(number_length(MAX_ROAD_DISTANCE_POST)) + R"(}),(\d))";
   return value;
 }
 
@@ -77,21 +79,11 @@ inline const std::regex &get_road_name_regex() {
   return value;
 }
 
-inline const std::regex &get_road_name_with_spaces_regex() {
-  static std::regex value(R"(\s*)" + get_road_name_expression() + R"(\s*)");
-  return value;
-}
-
-inline const std::regex &get_distance_regex() {
-  static std::regex value(get_distance_expression());
-  return value;
-}
-
 inline const std::regex &get_car_movement_regex() {
   static std::regex value(R"(\s*()"
                               + get_license_plate_expression() + R"()\s+()"
-                              + get_road_name_expression() + R"()\s+()"
-                              + get_distance_expression() + R"()\s*)");
+                              + get_road_name_expression() + R"()\s+)"
+                              + get_distance_expression() + R"(\s*)");
   return value;
 }
 
@@ -104,79 +96,29 @@ inline const std::regex &get_query_regex() {
   return value;
 }
 
-inline const std::regex &get_general_query_regex() {
-  static std::regex value(R"(\s*\?\s*)");
-  return value;
+inline std::string get_movement_license_match(const std::smatch &match) {
+  return match.str(1);
 }
 
-inline const std::regex &get_number_regex() {
-  static std::regex value(R"(\d+)");
-  return value;
+inline std::string get_movement_road_name_match(const std::smatch &match) {
+  return match.str(2);
+}
+
+inline std::string get_movement_distance_int_match(const std::smatch &match) {
+  return match.str(3);
+}
+
+inline std::string get_movement_distance_decimal_match(const std::smatch &match) {
+  return match.str(4);
+}
+
+inline std::string get_query_argument_match(const std::smatch &match) {
+  return match.str(1);
 }
 }
 
 inline void print_error(const InputLine &line) {
   std::cerr << "Error in line " << line.second << ": " << line.first << std::endl;
-}
-
-inline bool is_match_perfect(const std::smatch &match) {
-  return match.prefix().str().empty() && match.suffix().str().empty();
-}
-
-inline bool check_match(const std::string &text, const std::regex &regex) {
-  std::smatch match;
-  return std::regex_search(text, match, regex) && is_match_perfect(match);
-}
-
-RoadType char_to_road_type(char ch) {
-  if (ch == 'A') {
-    return RoadType::HIGHWAY;
-  } else {
-    return RoadType::EXPRESSWAY;
-  }
-}
-
-inline LicensePlate parse_license_plate(const std::string &text, std::smatch &match) {
-  std::regex_search(text, match, nod_regex::get_license_plate_regex());
-  return match.str();
-}
-
-inline RoadNumber parse_road_number(const std::string &text, std::smatch &match) {
-  std::regex_search(text, match, nod_regex::get_number_regex());
-  return std::stoi(match.str());
-}
-
-inline RoadDistancePost parse_distance_post(const std::string &text, std::smatch &match) {
-  std::regex_search(text, match, nod_regex::get_number_regex());
-
-  RoadDistancePost distance = 10 * std::stoul(match.str());
-
-  std::string decimal_part = match.suffix();
-  std::regex_search(decimal_part, match, nod_regex::get_number_regex());
-
-  distance += std::stoi(match.str());
-  return distance;
-}
-
-inline Road parse_road_name(const std::string &road_name, std::smatch &match) {
-  RoadType type = char_to_road_type(road_name[0]);
-  std::string next_info = match.suffix();
-  RoadNumber number = parse_road_number(road_name, match);
-  return Road(number, type);
-}
-
-inline RoadInfo parse_road_info(const std::string &text, std::smatch &match) {
-  std::regex_search(text, match, nod_regex::get_road_name_regex());
-  std::string road_name = match.str();
-  std::string next_info = match.suffix();
-
-  Road road = parse_road_name(road_name, match);
-
-  std::regex_search(next_info, match, nod_regex::get_distance_regex());
-  std::string road_distance = match.str();
-  RoadDistancePost distance_post = parse_distance_post(road_distance, match);
-
-  return RoadInfo(road, distance_post);
 }
 
 inline bool are_roads_same(const RoadInfo &road_info1, const RoadInfo &road_info2) {
@@ -364,71 +306,84 @@ inline void general_query(const Memory &memory) {
   query_all_roads(memory);
 }
 
-//Assumes that line contains matching string.
-void parse_info(const InputLine &line, Memory &memory) {
-  std::smatch match;
+RoadType char_to_road_type(char ch) {
+  if (ch == 'A') {
+    return RoadType::HIGHWAY;
+  } else {
+    return RoadType::EXPRESSWAY;
+  }
+}
 
-  LicensePlate license_plate = parse_license_plate(line.first, match);
-  RoadInfo road_info = parse_road_info(match.suffix(), match);
+inline RoadDistancePost parse_distance_post(const std::smatch &match) {
+  RoadDistancePost distance = 10 * std::stoul(nod_regex::get_movement_distance_int_match(match));
+  distance += std::stoi(nod_regex::get_movement_distance_decimal_match(match));
+  return distance;
+}
+
+inline Road parse_road_name(const std::string &road_name) {
+  RoadType type = char_to_road_type(road_name[0]);
+  RoadNumber number = std::stoi(road_name.substr(1));
+  return Road(number, type);
+}
+
+inline RoadInfo parse_road_info(const std::smatch &match) {
+  Road road = parse_road_name(nod_regex::get_movement_road_name_match(match));
+
+  RoadDistancePost distance_post = parse_distance_post(match);
+
+  return RoadInfo(road, distance_post);
+}
+
+//Assumes that match contains matching regular expression.
+void parse_info(const InputLine &line, std::smatch &match, Memory &memory) {
+  LicensePlate license_plate = nod_regex::get_movement_license_match(match);
+  RoadInfo road_info = parse_road_info(match);
 
   log(license_plate, road_info, line, memory);
 }
 
-//Assumes that line contains string matching query.
-void try_querying_car(const InputLine &line, Memory &memory) {
-  std::smatch match;
+inline bool is_match_perfect(const std::smatch &match) {
+  return match.prefix().str().empty() && match.suffix().str().empty();
+}
 
-  //We already checked correctness of the line,
-  //so the only case in which match can't be found
-  //is when the query argument is road name consisting of two characters (eg. S2)
-  LicensePlate license_plate = parse_license_plate(line.first, match);
-  if (!license_plate.empty()) {
+inline bool check_match(const std::string &text, const std::regex &regex, std::smatch &match) {
+  return std::regex_search(text, match, regex) && is_match_perfect(match);
+}
+
+void try_querying_car(const LicensePlate &license_plate, const Memory &memory) {
+  //We need to confirm that our string defines license plate.
+  std::smatch match;
+  if (check_match(license_plate, nod_regex::get_license_plate_regex(), match)) {
     query_car(license_plate, memory);
   }
 }
 
-bool check_if_road_name_is_not_substring(std::smatch &match) {
-  return (match.suffix().str().empty() &&
-      check_match(match.prefix(), nod_regex::get_general_query_regex()));
-}
-
-void parse_road_name_and_query_road(const std::string &road_name_with_spaces,
-                                    Memory &memory) {
+void try_querying_road(const std::string &road_name, const Memory &memory) {
+  //We need to confirm that our string defines name of a road.
   std::smatch match;
-  std::regex_search(road_name_with_spaces, match, nod_regex::get_road_name_regex());
-  Road road = parse_road_name(match.str(), match);
-  query_road(road, memory);
-}
-
-//Assumes that line contains string matching query.
-void try_querying_road(const InputLine &line, Memory &memory) {
-  std::smatch match;
-  //Correct road name can be a substring of a license plate,
-  //eg. A1 is substring of QA1TYH12
-  //Therefore, we need to confirm that
-  //query's argument is not something like that.
-  std::regex_search(line.first, match, nod_regex::get_road_name_with_spaces_regex());
-  if (!match.str().empty() && check_if_road_name_is_not_substring(match)) {
-    parse_road_name_and_query_road(match.str(), memory);
+  if (check_match(road_name, nod_regex::get_road_name_regex(), match)) {
+    Road road = parse_road_name(road_name);
+    query_road(road, memory);
   }
 }
 
-//Assumes that line contains matching string.
-void parse_query(const InputLine &line, Memory &memory) {
-  if (check_match(line.first, nod_regex::get_general_query_regex())) {
+//Assumes that match contains matching regular expression.
+void parse_query(std::smatch &match, const Memory &memory) {
+  if (nod_regex::get_query_argument_match(match).empty()) {
     general_query(memory);
   } else {
-    try_querying_car(line, memory);
-    try_querying_road(line, memory);
+    std::string query_argument = nod_regex::get_query_argument_match(match);
+    try_querying_car(query_argument, memory);
+    try_querying_road(query_argument, memory);
   }
 }
 
-LineType get_line_type(const InputLine &line) {
+LineType get_line_type(const InputLine &line, std::smatch &match) {
   const std::string &text = line.first;
 
-  if (check_match(text, nod_regex::get_car_movement_regex())) {
+  if (check_match(text, nod_regex::get_car_movement_regex(), match)) {
     return LineType::INFO;
-  } else if (check_match(text, nod_regex::get_query_regex())) {
+  } else if (check_match(text, nod_regex::get_query_regex(), match)) {
     return LineType::QUERY;
   } else {
     return LineType::ERROR;
@@ -436,12 +391,13 @@ LineType get_line_type(const InputLine &line) {
 }
 
 void parse_line(const InputLine &line, Memory &memory) {
-  switch (get_line_type(line)) {
+  std::smatch match;
+  switch (get_line_type(line, match)) {
     case LineType::INFO:
-      parse_info(line, memory);
+      parse_info(line, match, memory);
       break;
     case LineType::QUERY:
-      parse_query(line, memory);
+      parse_query(match, memory);
       break;
     case LineType::ERROR:
       print_error(line);
