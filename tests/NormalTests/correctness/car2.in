@@ -1,0 +1,19 @@
+Car A1 34,5
+Pojazd A1 9,4
+Car A1 5,9
+Pojazd A1 1,0
+Car S1 3,4
+Pojazd S1 55,9
+Car S1 4,0
+Pojazd S1 60,0
+A1 A1 1,1
+A1 A1 61,7
+A1 A1 43,4
+A1 A1 45,9
+A1 A1 6,9
+Pojazd S1 56,3
+?A1
+?S1
+?Car
+?Pojazd
+?
