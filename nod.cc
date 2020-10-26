@@ -52,9 +52,9 @@ inline const std::string &get_road_name_expression() {
   return value;
 }
 
-inline RoadDistancePost number_length(RoadDistancePost road_distance_post){
+inline RoadDistancePost number_length(RoadDistancePost road_distance_post) {
   static int len = 0;
-  if(len == 0) {
+  if (len == 0) {
     while (road_distance_post > 0) {
       len++;
       road_distance_post /= 10;
@@ -166,7 +166,7 @@ inline void handle_wrong_road(const LicensePlate &license_plate,
 }
 
 template<class T, class S>
-inline bool has_key(std::map<T, S> map, T key) {
+inline bool has_key(const std::map<T, S> &map, T key) {
   return map.count(key) == 1;
 }
 
