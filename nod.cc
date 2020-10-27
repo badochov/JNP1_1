@@ -168,7 +168,7 @@ inline void handle_wrong_road(const LicensePlate &license_plate,
 }
 
 template<class T, class S>
-inline bool has_key(const std::map<T, S> &map, T key) {
+inline bool has_key(const std::map<T, S> &map, const T &key) {
   return map.count(key) == 1;
 }
 
