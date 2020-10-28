@@ -91,10 +91,10 @@ inline const std::regex &get_car_movement_regex() {
 
 inline const std::regex &get_query_regex() {
   static std::regex value(R"(\s*\?\s*()"
-                          + get_license_plate_expression()
-                          + R"(|)"
-                          + get_road_name_expression()
-                          + R"()?\s*)");
+                              + get_license_plate_expression()
+                              + R"(|)"
+                              + get_road_name_expression()
+                              + R"()?\s*)");
   return value;
 }
 
@@ -238,6 +238,7 @@ inline void handle_road_entrance_log(const LicensePlate &license_plate,
   get_entrance_memory(memory)[license_plate] = {road, input_line};
 }
 
+// Logs data about car entering/exiting the road
 void log(const LicensePlate &license_plate,
          const RoadInfo &road,
          const InputLine &input_line,
