@@ -346,28 +346,16 @@ void parse_info(const InputLine &line, std::smatch &match, Memory &memory) {
   log(license_plate, road_info, line, memory);
 }
 
-inline bool is_match_perfect(const std::smatch &match) {
-  return match.prefix().str().empty() && match.suffix().str().empty();
-}
-
-inline bool check_match(const std::string &text,
-                        const std::regex &regex,
-                        std::smatch &match) {
-  return std::regex_search(text, match, regex) && is_match_perfect(match);
-}
-
 void try_querying_car(const LicensePlate &license_plate, const Memory &memory) {
   //We need to confirm that our string defines license plate.
-  std::smatch match;
-  if (check_match(license_plate, nod_regex::get_license_plate_regex(), match)) {
+  if (std::regex_match(license_plate, nod_regex::get_license_plate_regex())) {
     query_car(license_plate, memory);
   }
 }
 
 void try_querying_road(const std::string &road_name, const Memory &memory) {
   //We need to confirm that our string defines name of a road.
-  std::smatch match;
-  if (check_match(road_name, nod_regex::get_road_name_regex(), match)) {
+  if (std::regex_match(road_name, nod_regex::get_road_name_regex())) {
     Road road = parse_road_name(road_name);
     query_road(road, memory);
   }
@@ -387,9 +375,9 @@ void parse_query(std::smatch &match, const Memory &memory) {
 LineType get_line_type(const InputLine &line, std::smatch &match) {
   const std::string &text = line.first;
 
-  if (check_match(text, nod_regex::get_car_movement_regex(), match)) {
+  if (std::regex_match(text, match, nod_regex::get_car_movement_regex())) {
     return LineType::INFO;
-  } else if (check_match(text, nod_regex::get_query_regex(), match)) {
+  } else if (std::regex_match(text, match, nod_regex::get_query_regex())) {
     return LineType::QUERY;
   } else {
     return LineType::ERROR;

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [[ $# != 2 ]]; then
-  echo "Sposób uzytkowania: $0 <ścieżka/do/folderu/z/testami> <ścieżka/do/fodleru/z/projektem> " >&2
+  echo "Sposób uzytkowania: $0 <ścieżka/do/folderu/z/testami> <ścieżka/do/folderu/z/projektem> " >&2
   exit 1
 fi
 
