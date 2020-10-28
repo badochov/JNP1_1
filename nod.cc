@@ -65,9 +65,9 @@ inline RoadDistancePost number_length(RoadDistancePost road_distance_post) {
 }
 
 inline const std::string &get_distance_expression() {
-  static std::string value = R"((0|[1-9]\d{0,)" +
-      std::to_string(number_length(MAX_ROAD_DISTANCE_POST)) +
-      R"(}),(\d))";
+  static std::string value = R"((0|[1-9]\d{0,)"
+      + std::to_string(number_length(MAX_ROAD_DISTANCE_POST))
+      + R"(}),(\d))";
   return value;
 }
 
@@ -90,11 +90,11 @@ inline const std::regex &get_car_movement_regex() {
 }
 
 inline const std::regex &get_query_regex() {
-  static std::regex value(R"(\s*\?\s*()" +
-      get_license_plate_expression() +
-      R"(|)" +
-      get_road_name_expression() +
-      R"()?\s*)");
+  static std::regex value(R"(\s*\?\s*()"
+                          + get_license_plate_expression()
+                          + R"(|)"
+                          + get_road_name_expression()
+                          + R"()?\s*)");
   return value;
 }
 
@@ -110,7 +110,7 @@ inline std::string get_movement_distance_int_match(const std::smatch &match) {
   return match.str(3);
 }
 
-inline std::string get_movement_distance_decimal_match(const std::smatch &match) {
+inline std::string get_movement_distance_fraction_match(const std::smatch &match) {
   return match.str(4);
 }
 
@@ -316,10 +316,13 @@ RoadType char_to_road_type(char ch) {
   }
 }
 
+// Given match from logging command,
+// parses numbers (integer and fraction parts) from distance post.
 inline RoadDistancePost parse_distance_post(const std::smatch &match) {
   std::string number_to_be_parsed = nod_regex::get_movement_distance_int_match(match);
   RoadDistancePost distance = 10 * std::stoul(number_to_be_parsed);
-  number_to_be_parsed = nod_regex::get_movement_distance_decimal_match(match);
+
+  number_to_be_parsed = nod_regex::get_movement_distance_fraction_match(match);
   distance += std::stoi(number_to_be_parsed);
   return distance;
 }
@@ -338,7 +341,9 @@ inline RoadInfo parse_road_info(const std::smatch &match) {
   return RoadInfo(road, distance_post);
 }
 
-//Assumes that match contains matching regular expression.
+// Given match from logging command, parses its arguments
+// and calls logging function.
+// Assumes that match contains matching regular expression.
 void parse_info(const InputLine &line, std::smatch &match, Memory &memory) {
   LicensePlate license_plate = nod_regex::get_movement_license_match(match);
   RoadInfo road_info = parse_road_info(match);
@@ -346,35 +351,24 @@ void parse_info(const InputLine &line, std::smatch &match, Memory &memory) {
   log(license_plate, road_info, line, memory);
 }
 
-inline bool is_match_perfect(const std::smatch &match) {
-  return match.prefix().str().empty() && match.suffix().str().empty();
-}
-
-inline bool check_match(const std::string &text,
-                        const std::regex &regex,
-                        std::smatch &match) {
-  return std::regex_search(text, match, regex) && is_match_perfect(match);
-}
-
 void try_querying_car(const LicensePlate &license_plate, const Memory &memory) {
-  //We need to confirm that our string defines license plate.
-  std::smatch match;
-  if (check_match(license_plate, nod_regex::get_license_plate_regex(), match)) {
+  //We need to confirm that our string defines correct license plate.
+  if (std::regex_match(license_plate, nod_regex::get_license_plate_regex())) {
     query_car(license_plate, memory);
   }
 }
 
 void try_querying_road(const std::string &road_name, const Memory &memory) {
-  //We need to confirm that our string defines name of a road.
-  std::smatch match;
-  if (check_match(road_name, nod_regex::get_road_name_regex(), match)) {
+  //We need to confirm that our string defines correct name of a road.
+  if (std::regex_match(road_name, nod_regex::get_road_name_regex())) {
     Road road = parse_road_name(road_name);
     query_road(road, memory);
   }
 }
 
-//Assumes that match contains matching regular expression.
-void parse_query(std::smatch &match, const Memory &memory) {
+// Given match from the query command, tries making matching queries.
+// Assumes that match contains matching regular expression.
+void parse_query(const std::smatch &match, const Memory &memory) {
   if (nod_regex::get_query_argument_match(match).empty()) {
     general_query(memory);
   } else {
@@ -384,12 +378,15 @@ void parse_query(std::smatch &match, const Memory &memory) {
   }
 }
 
+// Checks, whether the line contains
+// a piece of information to log, a query or invalid command.
+// Matching substrings in regex are put into match.
 LineType get_line_type(const InputLine &line, std::smatch &match) {
   const std::string &text = line.first;
 
-  if (check_match(text, nod_regex::get_car_movement_regex(), match)) {
+  if (std::regex_match(text, match, nod_regex::get_car_movement_regex())) {
     return LineType::INFO;
-  } else if (check_match(text, nod_regex::get_query_regex(), match)) {
+  } else if (std::regex_match(text, match, nod_regex::get_query_regex())) {
     return LineType::QUERY;
   } else {
     return LineType::ERROR;
