@@ -183,11 +183,10 @@ inline Distance calc_distance(const RoadInfo &road_entrance_info,
       - std::min(road_entrance_info.second, road_exit_info.second));
 }
 
-void add_data_to_car(
-    const LicensePlate &license_plate,
-    const Road &road,
-    Distance distance,
-    Memory &memory) {
+void add_data_to_car(const LicensePlate &license_plate,
+                     const Road &road,
+                     Distance distance,
+                     Memory &memory) {
   const RoadType &road_type = road.second;
   CarData &car_data = get_car_memory(memory)[license_plate];
 
@@ -255,7 +254,6 @@ inline void print_distance(Distance distance) {
 }
 
 void print_car_data(const LicensePlate &license_plate, const CarMemory &car_memory) {
-
   std::cout << license_plate;
   for (const auto &[road_type, distance] : car_memory.at(license_plate)) {
     std::cout << " " << road_type << " ";
@@ -266,8 +264,9 @@ void print_car_data(const LicensePlate &license_plate, const CarMemory &car_memo
 
 void query_car(const LicensePlate &license_plate, const Memory &memory) {
   const CarMemory &car_memory = get_car_memory(memory);
-  if (!has_key(car_memory, license_plate))
+  if (!has_key(car_memory, license_plate)) {
     return;
+  }
 
   print_car_data(license_plate, car_memory);
 }
@@ -353,14 +352,14 @@ void parse_info(const InputLine &line, std::smatch &match, Memory &memory) {
 }
 
 void try_querying_car(const LicensePlate &license_plate, const Memory &memory) {
-  //We need to confirm that our string defines correct license plate.
+  // We need to confirm that our string defines correct license plate.
   if (std::regex_match(license_plate, nod_regex::get_license_plate_regex())) {
     query_car(license_plate, memory);
   }
 }
 
 void try_querying_road(const std::string &road_name, const Memory &memory) {
-  //We need to confirm that our string defines correct name of a road.
+  // We need to confirm that our string defines correct name of a road.
   if (std::regex_match(road_name, nod_regex::get_road_name_regex())) {
     Road road = parse_road_name(road_name);
     query_road(road, memory);
@@ -397,14 +396,11 @@ LineType get_line_type(const InputLine &line, std::smatch &match) {
 void parse_line(const InputLine &line, Memory &memory) {
   std::smatch match;
   switch (get_line_type(line, match)) {
-    case LineType::INFO:
-      parse_info(line, match, memory);
+    case LineType::INFO:parse_info(line, match, memory);
       break;
-    case LineType::QUERY:
-      parse_query(match, memory);
+    case LineType::QUERY:parse_query(match, memory);
       break;
-    case LineType::ERROR:
-      print_error(line);
+    case LineType::ERROR:print_error(line);
       break;
   }
 }
