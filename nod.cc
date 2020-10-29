@@ -264,11 +264,9 @@ void print_car_data(const LicensePlate &license_plate, const CarMemory &car_memo
 
 void query_car(const LicensePlate &license_plate, const Memory &memory) {
   const CarMemory &car_memory = get_car_memory(memory);
-  if (!has_key(car_memory, license_plate)) {
-    return;
+  if (has_key(car_memory, license_plate)) {
+    print_car_data(license_plate, car_memory);
   }
-
-  print_car_data(license_plate, car_memory);
 }
 
 inline void print_road(const Road &road) {
@@ -302,7 +300,7 @@ void query_all_roads(const Memory &memory) {
   }
 }
 
-//Performs query with no parameters
+// Performs query with no parameters
 inline void general_query(const Memory &memory) {
   query_all_cars(memory);
   query_all_roads(memory);
